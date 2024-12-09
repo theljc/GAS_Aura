@@ -13,6 +13,12 @@ UCLASS()
 class TESTPROJECT_AURA_API AAuraCharacter : public AAuraCharacterBase
 {
 	GENERATED_BODY()
-	public:
-		AAuraCharacter();
+public:
+	AAuraCharacter();
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+private:
+	// 初始化 ActorInfo
+	void InitAbilityActorInfo();
+	
 };

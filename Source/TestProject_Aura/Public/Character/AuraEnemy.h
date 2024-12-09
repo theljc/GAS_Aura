@@ -21,4 +21,6 @@ class TESTPROJECT_AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemy
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Test")
 		bool HighLight;
+	protected:
+		virtual void BeginPlay() override;
 };

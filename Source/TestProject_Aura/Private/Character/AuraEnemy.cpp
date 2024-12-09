@@ -3,12 +3,20 @@
 
 #include "Character/AuraEnemy.h"
 
+#include "AbilitySystemComponent.h"
 #include "TestProject_Aura/TestProject_Aura.h"
 
 AAuraEnemy::AAuraEnemy()
 {
 	// 设置默认 Visibility 通道为 block 状态
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility,ECR_Block);
+
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	
+	AttributeSet = CreateDefaultSubobject<UAttributeSet>("AttributeSet");
+	
 }
 
 void AAuraEnemy::HighLightActor()
@@ -26,4 +34,12 @@ void AAuraEnemy::UnHighLightActor()
 	// 关闭描边
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
+}
+
+void AAuraEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AbilitySystemComponent->InitAbilityActorInfo(this,this);
+	
 }
