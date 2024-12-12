@@ -74,10 +74,14 @@ void AAuraPlayerController::BeginPlay()
 	// 获得输入子系统
 	UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
 		GetLocalPlayer());
-	check(InputSubsystem);
 
-	// 添加输入映射
-	InputSubsystem->AddMappingContext(AuraContext, 0);
+	// 多人游戏时服务器上会有所有的 PlayerController，所以不能用 check 检查，需要用 if 判断
+	if (InputSubsystem)
+	{
+		// 添加输入映射
+		InputSubsystem->AddMappingContext(AuraContext, 0);
+	}
+
 
 	// 显示鼠标
 	bShowMouseCursor = true;
