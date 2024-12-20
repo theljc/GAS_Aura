@@ -3,21 +3,65 @@
 
 #include "AbilitySystem/AuraAttributeSet.h"
 
+#include "AuraGameplayTags.h"
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
-	InitHealth(20.f);
-	InitMaxHealth(100.f);
-	InitMana(40.f);
-	InitMaxMana(100.f);
+	// InitHealth(20.f);
+	// InitMaxHealth(100.f);
+	// InitMana(40.f);
+	// InitMaxMana(100.f);
+
+	// 获得 GameplayTag
+	const FAuraGameplayTags& GameplayTag = FAuraGameplayTags::Get();
+
+	// 创建委托，绑定静态函数
+	// FAttributeSignature StrengthDelegate;
+	// StrengthDelegate.BindStatic(GetStrengthAttribute);
+	
+	// 添加 GameplayTag 和 函数指针 的映射
+
+	// Primary Attribute
+	TagsToAttribute.Add(GameplayTag.Attribute_Primary_Strength, GetStrengthAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Primary_Intelligence, GetIntelligenceAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Primary_Resilience, GetResilienceAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Primary_Vigor, GetVigorAttribute);
+
+	// Secondary Attribute
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_Armor, GetArmorAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_ArmorPenetration, GetArmorPenetrationAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_BlockChance, GetBlockChanceAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_CriticalHitChance, GetCriticalHitChanceAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_CriticalHitResistance, GetCriticalHitResistanceAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_CriticalHitDamage, GetCriticalHitDamageAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_HealthRegeneration, GetHealthRegenerationAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_MaxHealth, GetMaxHealthAttribute);
+	TagsToAttribute.Add(GameplayTag.Attribute_Secondary_MaxMana, GetMaxManaAttribute);
+	
 }
 
 void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ArmorPenetration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, BlockChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CriticalHitChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CriticalHitDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CriticalHitResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ManaRegeneration, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Strength, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Intelligence, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Resilience, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Vigor, COND_None, REPNOTIFY_Always);
+	
 
 	// COND_None 表示无条件的复制，REPNOTIFY_Always 表示总是复制，默认是 REPNOTIFY_OnChanged，表示只在变量的值和原来不同时复制
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Health, COND_None, REPNOTIFY_Always);
@@ -87,6 +131,14 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	// 将自定义结构体传入，获得 Data 里的数据
 	SetEffectProperties(Data, EffectProperties);
 	
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0, GetMaxHealth()));
+	}
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	{
+		SetMana(FMath::Clamp(GetMana(), 0, GetMaxMana()));
+	}
 }
 
 void UAuraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
@@ -114,5 +166,64 @@ void UAuraAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) 
 {
 	// 让 GAS 系统知道此变量被复制到客户端了
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxMana, OldMaxMana);
-	
+}
+
+void UAuraAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Strength, OldStrength);
+}
+
+void UAuraAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Intelligence, OldIntelligence);
+}
+
+void UAuraAttributeSet::OnRep_Resilience(const FGameplayAttributeData& OldResilience) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Resilience, OldResilience);
+}
+
+void UAuraAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Vigor, OldVigor);
+}
+
+void UAuraAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Armor, OldArmor);
+}
+
+void UAuraAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, ArmorPenetration, OldArmorPenetration);
+}
+
+void UAuraAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, BlockChance, OldBlockChance);
+}
+
+void UAuraAttributeSet::OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, CriticalHitChance, OldCriticalHitChance);
+}
+
+void UAuraAttributeSet::OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, CriticalHitDamage, OldCriticalHitDamage);
+}
+
+void UAuraAttributeSet::OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, CriticalHitResistance, OldCriticalHitResistance);
+}
+
+void UAuraAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, HealthRegeneration, OldHealthRegeneration);
+}
+
+void UAuraAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, ManaRegeneration, OldManaRegeneration);
 }

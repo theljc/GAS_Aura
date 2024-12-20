@@ -38,10 +38,23 @@ void AAuraEnemy::UnHighLightActor()
 	Weapon->SetRenderCustomDepth(false);
 }
 
+int32 AAuraEnemy::GetPlayerLevel()
+{
+	return Level;
+}
+
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AbilitySystemComponent->InitAbilityActorInfo(this,this);
+	InitAbilityActorInfo();
 	
+}
+
+void AAuraEnemy::InitAbilityActorInfo()
+{
+	AbilitySystemComponent->InitAbilityActorInfo(this,this);
+	// 调用 AbilityActorInfoSet 表示 ActorInfo 已经设置好了
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+
 }

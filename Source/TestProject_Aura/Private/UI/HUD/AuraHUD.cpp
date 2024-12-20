@@ -3,8 +3,8 @@
 
 #include "UI/HUD/AuraHUD.h"
 #include "UI/Widget/AuraUserWidget.h"
+#include "UI/WidgetController/AttributeWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
-// #include "Blueprint/UserWidget.h"
 
 UOverlayWidgetController* AAuraHUD::GetOverlayWidgetController(const FAuraWidgetControllerParam& WidgetControllerParam)
 {
@@ -20,8 +20,23 @@ UOverlayWidgetController* AAuraHUD::GetOverlayWidgetController(const FAuraWidget
 	return OverlayWidgetController;
 }
 
+UAttributeWidgetController* AAuraHUD::GetAttributeWidgetController(
+	const FAuraWidgetControllerParam& WidgetControllerParam)
+{
+	if (AttributeWidgetController == nullptr)
+	{
+		AttributeWidgetController = NewObject<UAttributeWidgetController>(this, AttributeWidgetControllerClass);
+		AttributeWidgetController->SetWidgetControllerClass(WidgetControllerParam);
+		AttributeWidgetController->BindCallBacksDependencies();
+	}
+	return AttributeWidgetController;
+}
+
 void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
+	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_AuraHUD"));
+	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_AuraHUD"));
+	
 	// 创建主 UI
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
 	OverlayWidget = Cast<UAuraUserWidget>(Widget);

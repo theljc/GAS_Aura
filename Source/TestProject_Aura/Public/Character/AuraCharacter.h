@@ -17,8 +17,13 @@ public:
 	AAuraCharacter();
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+
+	// 重写 ICombatInterface 接口的函数
+	virtual int32 GetPlayerLevel() override;
+	
 protected:
 	virtual void BeginPlay() override;
+	
 private:
 	// 初始化 ActorInfo
 	virtual void InitAbilityActorInfo() override;
