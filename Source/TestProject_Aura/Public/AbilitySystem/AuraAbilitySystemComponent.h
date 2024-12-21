@@ -16,8 +16,7 @@ class TESTPROJECT_AURA_API UAuraAbilitySystemComponent : public UAbilitySystemCo
 	GENERATED_BODY()
 public:
 	void AbilityActorInfoSet();
-	void OnEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle) const;
-
+	
 	// 添加角色初始拥有的 GA
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities);
 
@@ -25,6 +24,11 @@ public:
 	void AbilityInputTagHeld(const FGameplayTag& Tags);
 	// 松开指定按键时不会激活 GA ，但也需要通知
 	void AbilityInputTagReleased(const FGameplayTag& Tags);
+
+	// RPC 函数，绑定委托时使客户端也能够调用此函数
+	UFUNCTION(Client, Reliable)
+	void ClientOnEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle) const;
+
 
 	FEffectAssetTags EffectAssetTags;
 

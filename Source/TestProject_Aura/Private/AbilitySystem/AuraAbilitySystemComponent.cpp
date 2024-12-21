@@ -8,13 +8,13 @@
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
-	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::OnEffectApplied);
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::ClientOnEffectApplied);
 	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 	// GameplayTags.Attribute_Secondary_Armor.ToString();
 	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s"), *GameplayTags.Attribute_Secondary_Armor.ToString()));
 }
 
-void UAuraAbilitySystemComponent::OnEffectApplied(UAbilitySystemComponent* AbilitySystemComponent,
+void UAuraAbilitySystemComponent::ClientOnEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
                                                   const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle) const
 {
 	// 在 GE 应用的时候，获得 Tag 的信息保存到 TagContainer

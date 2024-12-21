@@ -25,4 +25,7 @@ public:
 	// 获得等级的接口
 	virtual int32 GetPlayerLevel();
 	
+	// 获得武器插槽的位置
+	virtual FVector GetCombatSocketLocation();
+	
 };

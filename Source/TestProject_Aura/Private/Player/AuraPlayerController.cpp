@@ -4,32 +4,63 @@
 #include "Player/AuraPlayerController.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AuraGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Components/WindDirectionalSourceComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
-
+	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
-void AAuraPlayerController::PlayerTick(float DeltaTime)
+void AAuraPlayerController::PlayerTick(const float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
 	CursorTrace();
+
+	AutoRun();
+	
+}
+
+void AAuraPlayerController::AutoRun()
+{
+	if (!bAutoRunning) return;
+	
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		// 寻找距离给定位置最近的样条线上的点
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+		// 寻找距离给定位置最近的样条线上的方向
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
+		// 移动
+		ControlledPawn->AddMovementInput(Direction);
+
+		// 判断目标点和当前样条线上的点的距离是否小于固定值
+		const float Distance = (LocationOnSpline - CachedDestination).Length();
+		// 小于则表示到达了目标点
+		if (Distance <= AutoRunAcceptanceRadius)
+		{
+			// 取消自动寻路
+			bAutoRunning = false;
+		}
+	}
 }
 
 void AAuraPlayerController::CursorTrace()
 {
-	FHitResult CursorResult;
-	GetHitResultUnderCursor(ECC_Visibility, false, CursorResult);
-	if (!CursorResult.bBlockingHit) return;
+
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHitResult);
+	if (!CursorHitResult.bBlockingHit) return;
 
 	LastActor = ThisActor;
-	ThisActor = Cast<IEnemyInterface>(CursorResult.GetActor());
+	ThisActor = Cast<IEnemyInterface>(CursorHitResult.GetActor());
 
 	/**
 	 * 检测有如下 4 种情况
@@ -38,49 +69,110 @@ void AAuraPlayerController::CursorTrace()
 	 * 3. 上一个不为空这一个为空：取消高亮上一个
 	 * 4. 上一个不为空这一个不为空：判断上一个是否等于这一个，相等则什么都不做，不相等则取消高亮上一个并高亮这一个
 	 */
-	if (LastActor == nullptr)
-	{
-		if (ThisActor != nullptr)
-		{
-			// 高亮这一个
-			ThisActor->HighLightActor();
-		}
-	}
-	else
-	{
-		if (ThisActor == nullptr)
-		{
-			// 取消高亮上一个
-			LastActor->UnHighLightActor();
 
-		}
-		else
-		{
-			if (LastActor != ThisActor)
-			{
-				// 取消高亮上一个并高亮这一个
-				LastActor->UnHighLightActor();
-				ThisActor->HighLightActor();
-			}	
-		}
+	if (ThisActor != LastActor)
+	{
+		if (LastActor) LastActor->UnHighLightActor();
+		if (ThisActor) ThisActor->HighLightActor();
 	}
 	
 }
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "AbilityInputTagPressed");
+	// 当激活 GA 时（拥有 InputTag_LMB 这个 Tag 时），判断选中的是不是敌人，是的话就不再移动
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		bTargeting = ThisActor ? true : false;
+		bAutoRunning = false;
+	}
+
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "AbilityInputTagReleased");
+	// 不是鼠标左键
+	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagHeld(InputTag);
+		}
+		return;
+	}
+
+	// 按住了鼠标左键
+	if (bTargeting)
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagReleased(InputTag);
+		}
+	}
+	else
+	{
+		APawn* ControlledPawn = GetPawn();
+		if (FollowTime <= ShortPressThreshold && ControlledPawn)
+		{
+			// 未点击到敌人时，自动寻路
+			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
+			{
+				Spline->ClearSplinePoints();
+				// NavPath->PathPoints 里有所有的路径点
+				for (const FVector& Point : NavPath->PathPoints)
+				{
+					// 将每个点添加到样条线
+					Spline->AddSplinePoint(Point,ESplineCoordinateSpace::World);
+					DrawDebugSphere(GetWorld(), Point, 8, 8, FColor::Red, false, 5.f);
+				}
+				// 如果鼠标点击的点不可到达，则使用最后一个可到达的点
+				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+				bAutoRunning = true;
+			}
+			// 设置为自动寻路
+			FollowTime = 0.f;
+			bTargeting = false;
+		}
+	}
+	
 }
 
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	GetASC()->AbilityInputTagHeld(InputTag);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "AbilityInputTagHeld");
+	// 不是鼠标左键
+	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagHeld(InputTag);
+		}
+		return;
+	}
+
+	// 按住了鼠标左键
+	if (bTargeting)
+	{
+		if (GetASC())
+		{
+			GetASC()->AbilityInputTagHeld(InputTag);
+		}
+	}
+	else
+	{
+		// 获得鼠标点击点的碰撞信息
+		if (CursorHitResult.bBlockingHit)
+		{
+			// 移动的目标点就是碰撞点的位置
+			CachedDestination = CursorHitResult.ImpactPoint;
+		}
+		if (APawn* ControlledPawn = GetPawn())
+		{
+			// 计算移动的方向
+			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+			ControlledPawn->AddMovementInput(WorldDirection);
+		}
+	}
+	
 }
 
 UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
