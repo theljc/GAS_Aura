@@ -130,6 +130,8 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	FEffectProperties EffectProperties;
 	// 将自定义结构体传入，获得 Data 里的数据
 	SetEffectProperties(Data, EffectProperties);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%s,new attr: %f"), *EffectProperties.TargetAvatarActor->GetName(), GetHealth()));
 	
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{

@@ -26,7 +26,6 @@ void AAuraPlayerController::PlayerTick(const float DeltaTime)
 	CursorTrace();
 
 	AutoRun();
-	
 }
 
 void AAuraPlayerController::AutoRun()
@@ -101,17 +100,12 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		return;
 	}
 
-	// 按住了鼠标左键
-	if (bTargeting)
+	GetASC()->AbilityInputTagReleased(InputTag);
+
+	// 按住的不是鼠标左键或 Shift
+	if (!bTargeting && !bShiftKeyDown)
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagReleased(InputTag);
-		}
-	}
-	else
-	{
-		APawn* ControlledPawn = GetPawn();
+		const APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
 			// 未点击到敌人时，自动寻路
@@ -134,7 +128,6 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 			bTargeting = false;
 		}
 	}
-	
 }
 
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
@@ -149,8 +142,8 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		return;
 	}
 
-	// 按住了鼠标左键
-	if (bTargeting)
+	// 按住了鼠标左键或 shift
+	if (bTargeting || bShiftKeyDown)
 	{
 		if (GetASC())
 		{
@@ -224,6 +217,8 @@ void AAuraPlayerController::SetupInputComponent()
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
 	// 绑定 Move 行为
 	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AAuraPlayerController::ShiftPressed);
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AAuraPlayerController::ShiftReleased);
 	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
 
@@ -248,3 +243,4 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	}
 	
 }
+

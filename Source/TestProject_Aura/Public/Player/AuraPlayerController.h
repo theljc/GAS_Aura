@@ -37,6 +37,14 @@ private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ShiftAction;
+
+	// 按住 shift 时可以在指定位置释放技能
+	void ShiftPressed() {bShiftKeyDown = true;}
+	void ShiftReleased() {bShiftKeyDown = false;}
+	bool bShiftKeyDown = false;
+	
 	void Move(const FInputActionValue& InputActionValue);
 	void CursorTrace();
 
@@ -81,4 +89,5 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 	
 };
+
 
