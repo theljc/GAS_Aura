@@ -38,8 +38,9 @@ protected:
 	
 	virtual FVector GetCombatSocketLocation() override;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
 
@@ -55,7 +56,7 @@ protected:
 	// 应用 GE
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> DefaultGameplayEffectClass, float Level) const;
 	// 初始化所有的默认属性
-	void InitializeDefaultAttributes() const;
+	virtual void InitializeDefaultAttributes() const;
 	// 只在服务器上执行，此函数会调用 AuraASC 的 AddCharacterAbilities 激活初始 GA
 	void AddCharacterAbilities() const;
 	

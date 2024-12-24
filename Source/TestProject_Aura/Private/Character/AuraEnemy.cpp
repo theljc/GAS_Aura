@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "TestProject_Aura/TestProject_Aura.h"
 #include "UI/Widget/AuraUserWidget.h"
@@ -86,4 +87,11 @@ void AAuraEnemy::InitAbilityActorInfo()
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
 	InitializeDefaultAttributes();
+}
+
+void AAuraEnemy::InitializeDefaultAttributes() const
+{
+	// 用函数库里的静态函数初始化属性
+	UAuraAbilitySystemLibrary::InitalizeDefaultAttribute(this, CharacterClass, Level, AbilitySystemComponent);
+	
 }

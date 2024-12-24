@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Character/AuraCharacterBase.h"
 #include "Components/WidgetComponent.h"
 #include "Interaction/EnemyInterface.h"
@@ -30,9 +31,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
+	// 初始化敌人类的属性
+	virtual void InitializeDefaultAttributes() const override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Default Class")
 	int32 Level = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Default Class")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;

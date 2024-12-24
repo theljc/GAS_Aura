@@ -131,7 +131,6 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	// 将自定义结构体传入，获得 Data 里的数据
 	SetEffectProperties(Data, EffectProperties);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%s,new attr: %f"), *EffectProperties.TargetAvatarActor->GetName(), GetHealth()));
 	
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
@@ -140,6 +139,19 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(), 0, GetMaxMana()));
+	}
+	if (Data.EvaluatedData.Attribute == GetInComingDamageAttribute())
+	{
+		const float LocalInComingDamage = GetInComingDamage();
+		SetInComingDamage(0.f);
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%s,new attr: %f"), *EffectProperties.TargetAvatarActor->GetName(), LocalInComingDamage));
+		if (LocalInComingDamage > 0)
+		{
+			const float NewHealth = GetHealth() - LocalInComingDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0, GetMaxHealth()));
+
+			const bool bFatal = NewHealth <= 0;
+		}
 	}
 }
 

@@ -144,6 +144,13 @@ public:
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana);  // 用属性访问器来操作属性
 
+	/*
+	 * Meta Attribute
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Meta Attributes")
+	FGameplayAttributeData InComingDamage;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, InComingDamage);  // 用属性访问器来操作属性
+
 	
 	// 当变量从服务器复制到客户端时会调用此 OnRep 函数，可以接收一个参数作为旧的变量值
 	UFUNCTION()
