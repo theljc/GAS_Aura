@@ -7,12 +7,15 @@
 #include "AuraGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "MovieSceneTracksComponentTypes.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/WindDirectionalSourceComponent.h"
+#include "GameFramework/Character.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/Widget/DamageTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -26,6 +29,18 @@ void AAuraPlayerController::PlayerTick(const float DeltaTime)
 	CursorTrace();
 
 	AutoRun();
+}
+
+void AAuraPlayerController::ShowDamageNumber_Implementation(const float DamageAmount, ACharacter* TargetCharacter)
+{
+	if (IsValid(TargetCharacter) && DamageTextComponentClass)
+	{
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->SetDamageText(DamageAmount);
+	}
 }
 
 void AAuraPlayerController::AutoRun()
@@ -117,7 +132,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 				{
 					// 将每个点添加到样条线
 					Spline->AddSplinePoint(Point,ESplineCoordinateSpace::World);
-					DrawDebugSphere(GetWorld(), Point, 8, 8, FColor::Red, false, 5.f);
+					// DrawDebugSphere(GetWorld(), Point, 8, 8, FColor::Red, false, 5.f);
 				}
 				// 如果鼠标点击的点不可到达，则使用最后一个可到达的点
 				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];

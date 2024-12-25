@@ -28,7 +28,12 @@ public:
 	// 获得武器插槽的位置
 	virtual FVector GetCombatSocketLocation();
 
+	virtual void Die() = 0;
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void UpdateFacingTarget(const FVector& Location);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetHitReactMontage();
 	
 };

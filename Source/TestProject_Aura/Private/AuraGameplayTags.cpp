@@ -38,5 +38,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		"Damage",
 		FString("伤害"));
+	
+	GameplayTags.Effect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Effect.HitReact",
+	FString("受伤时的行为"));
 
 }

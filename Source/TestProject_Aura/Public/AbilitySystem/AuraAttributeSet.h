@@ -36,6 +36,9 @@ public:
 	ACharacter* SourceCharacter = nullptr;
 	
 	UPROPERTY()
+	UAbilitySystemComponent* TargetASC = nullptr;
+	
+	UPROPERTY()
 	AActor* TargetAvatarActor = nullptr;
 
 	UPROPERTY()
@@ -203,5 +206,6 @@ public:
 
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
+	void ShowFloatingText(const FEffectProperties& Properties, float Damage);
 	
 };
