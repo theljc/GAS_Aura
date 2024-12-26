@@ -43,16 +43,10 @@ UAttributeWidgetController* UAuraAbilitySystemLibrary::GetAttributeWidgetControl
 
 void UAuraAbilitySystemLibrary::InitalizeDefaultAttribute(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC)
 {
-	// AuraGameMode 里保存了属性
-	const AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (AuraGameModeBase == nullptr)
-	{
-		return;
-	}
 
 	AActor* AvatarActor = ASC->GetAvatarActor();
 
-	UCharacterClassInfo* CharacterInfo = AuraGameModeBase->CharacterClassInfo;
+	UCharacterClassInfo* CharacterInfo = GetCharacterClassInfo(WorldContextObject);
 	FCharacterClassDefaultInfo ClassDefaultInfo = CharacterInfo->GetCharacterClass(CharacterClass);
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
@@ -71,17 +65,21 @@ void UAuraAbilitySystemLibrary::InitalizeDefaultAttribute(const UObject* WorldCo
 
 void UAuraAbilitySystemLibrary::GiveStartUpAbility(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
 {
-	const AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (AuraGameModeBase == nullptr)
-	{
-		return;
-	}
-
-	UCharacterClassInfo* CharacterInfo = AuraGameModeBase->CharacterClassInfo;
+	UCharacterClassInfo* CharacterInfo = GetCharacterClassInfo(WorldContextObject);
 	for (auto AbilityClass : CharacterInfo->CommonAbilitys)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		ASC->GiveAbility(AbilitySpec);
 	}
 
+}
+
+UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	const AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (AuraGameModeBase == nullptr)
+	{
+		return nullptr;
+	}
+	return AuraGameModeBase->CharacterClassInfo;
 }
