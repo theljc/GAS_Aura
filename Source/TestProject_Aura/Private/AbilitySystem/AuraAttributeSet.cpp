@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "GameplayEffectExtension.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -93,7 +94,7 @@ void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
 {
 	// 应用 GE 后 Data 中包含了很多信息
-	Props.EffectContextHandle = Data.EffectSpec.GetEffectContext();
+	Props.EffectContextHandle = Data.EffectSpec.GetContext();
 	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 
 	// 获得触发 GE 的 ASC 中的信息
@@ -173,27 +174,34 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
 
-			// ShowFloatingText(EffectProperties, LocalInComingDamage);
-			if (EffectProperties.SourceCharacter != EffectProperties.TargetCharacter)
-			{
-				AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(EffectProperties.SourceCharacter, 0));
-				if (AuraPC)
-				{
-					AuraPC->ShowDamageNumber(LocalInComingDamage, EffectProperties.TargetCharacter);
-				}
-			}
+			
+			const bool bBlocked = UAuraAbilitySystemLibrary::IsBlockedHit(EffectProperties.EffectContextHandle);
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%d"), bBlocked));
+			const bool bCritical = UAuraAbilitySystemLibrary::IsCriticalHit(EffectProperties.EffectContextHandle);
+			
+			ShowFloatingText(EffectProperties, LocalInComingDamage, bBlocked, bCritical);
+			
+			
+			// if (EffectProperties.SourceCharacter != EffectProperties.TargetCharacter)
+			// {
+			// 	AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(EffectProperties.SourceCharacter, 0));
+			// 	if (AuraPC)
+			// 	{
+			// 		AuraPC->ShowDamageNumber(LocalInComingDamage, EffectProperties.TargetCharacter);
+			// 	}
+			// }
 		}
 	}
 }
 
-void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperties, float Damage)
+void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperties, float Damage, bool bBlockedHit, bool bCriticalHit)
 {
 	if (EffectProperties.SourceCharacter != EffectProperties.TargetCharacter)
 	{
 		AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(EffectProperties.SourceCharacter, 0));
 		if (AuraPC)
 		{
-			AuraPC->ShowDamageNumber(Damage, EffectProperties.TargetCharacter);
+			AuraPC->ShowDamageNumber(Damage, EffectProperties.TargetCharacter, bCriticalHit, bBlockedHit);
 		}
 	}
 }

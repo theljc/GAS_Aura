@@ -11,5 +11,8 @@ public class TestProject_AuraTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
 		ExtraModuleNames.Add("TestProject_Aura");
+		bUseUnityBuild = false;
+		bUsePCHFiles = false;
+		bAllowLTCG = false; // 禁用链接时间代码生成
 	}
 }

@@ -75,6 +75,10 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	// 1 ~ 100 之间的随机数用于判断是否能够阻挡
 	const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("block:%d"), bBlocked));
+
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
 
 	// 结算格挡后的伤害
 	Damage = bBlocked ? Damage / 2.f : Damage;
@@ -130,6 +134,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// 我方暴击率减去敌方抗暴率乘以等级
 	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient;
 	const bool bCriticalHit = FMath::RandRange(1, 100) < EffectiveCriticalHitChance;
+
+	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCriticalHit);
 
 	// 结算暴击后的伤害
 	Damage = bCriticalHit ? Damage * 2.f + SourceCriticalHitDamage: Damage;

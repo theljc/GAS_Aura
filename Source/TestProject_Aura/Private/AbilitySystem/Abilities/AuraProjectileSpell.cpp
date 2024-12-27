@@ -51,7 +51,18 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileLocation)
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		
 		UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+		FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+
+		EffectContextHandle.SetAbility(this);
+		EffectContextHandle.AddSourceObject(Projectile);
+		TArray<TWeakObjectPtr<AActor>> Actors;
+		Actors.Add(Projectile);
+		EffectContextHandle.AddActors(Actors);
+		FHitResult Hit;
+		EffectContextHandle.AddHitResult(Hit);
+		Hit.Location = ProjectileLocation;
+		
+		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 
 		const float ScaleDamage = Damage.GetValueAtLevel(GetAbilityLevel());
 		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("Damage: %f") , ScaleDamage));
