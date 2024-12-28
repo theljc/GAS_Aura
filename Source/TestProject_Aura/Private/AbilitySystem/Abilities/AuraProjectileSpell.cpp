@@ -34,7 +34,6 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileLocation)
 		// 获得武器插槽的 Location
 		FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
 		FRotator SocketRotation = (ProjectileLocation - SocketLocation).Rotation();
-		SocketRotation.Pitch = 0.f;
 
 		// 设置 Location
 		FTransform SpawnTransform;
@@ -64,11 +63,13 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileLocation)
 		
 		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 
-		const float ScaleDamage = Damage.GetValueAtLevel(GetAbilityLevel());
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("Damage: %f") , ScaleDamage));
+		for (auto Pair : DamageTypes)
+		{
+			const float ScaleDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaleDamage);
+			
+		}
 
-		FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, ScaleDamage);
 		Projectile->DamageEffectSpecHandle = SpecHandle;
 		
 		// 在所有属性设置完后生成
