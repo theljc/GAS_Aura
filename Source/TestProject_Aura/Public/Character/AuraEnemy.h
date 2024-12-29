@@ -10,6 +10,8 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
+class AAuraAIController;
+class UBehaviorTree;
 /**
  * 
  */
@@ -19,6 +21,9 @@ class TESTPROJECT_AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemy
 	GENERATED_BODY()
 public:
 	AAuraEnemy();
+
+	virtual void PossessedBy(AController* NewController) override;
+	
 	virtual void HighLightActor() override;
 	virtual void UnHighLightActor() override;
 
@@ -39,6 +44,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	float LifeSpan = 5.f;
 	
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxHealthChanged;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
@@ -46,8 +57,6 @@ protected:
 	virtual void InitializeDefaultAttributes() const override;
 
 	virtual void Die() override;
-
-	void HitReactTagChanged();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Default Class")
 	int32 Level = 1;
@@ -57,11 +66,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
+	
+	UPROPERTY(EditDefaultsOnly, Category="AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedSignature OnHealthChanged;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedSignature OnMaxHealthChanged;
+	UPROPERTY()
+	TObjectPtr<AAuraAIController> AuraAIController;
 	
 };

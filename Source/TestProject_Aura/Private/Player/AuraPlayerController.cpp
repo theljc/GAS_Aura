@@ -134,9 +134,12 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 					Spline->AddSplinePoint(Point,ESplineCoordinateSpace::World);
 					// DrawDebugSphere(GetWorld(), Point, 8, 8, FColor::Red, false, 5.f);
 				}
-				// 如果鼠标点击的点不可到达，则使用最后一个可到达的点
-				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
-				bAutoRunning = true;
+				if (NavPath->PathPoints.Num() > 0)
+				{
+					// 如果鼠标点击的点不可到达，则使用最后一个可到达的点
+					CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+					bAutoRunning = true;
+				}
 			}
 			// 设置为自动寻路
 			FollowTime = 0.f;
