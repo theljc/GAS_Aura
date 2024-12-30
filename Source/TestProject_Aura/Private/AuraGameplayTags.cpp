@@ -79,4 +79,20 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	"Effect.HitReact",
 	FString("受伤时的行为"));
 
+	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Attack",
+	FString("攻击技能"));
+
+	GameplayTags.Montage_Attack_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Montage.Attack.Weapon",
+	FString("用武器攻击的动画"));
+
+	GameplayTags.Montage_Attack_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Montage.Attack.LeftHand",
+	FString("用左手攻击的动画"));
+	
+	GameplayTags.Montage_Attack_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Montage.Attack.RightHand",
+	FString("用右手攻击的动画"));
+	
 }

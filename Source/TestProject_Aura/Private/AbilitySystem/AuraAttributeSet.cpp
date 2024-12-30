@@ -114,8 +114,7 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 		Props.SourceAvatarActor = Props.SourceASC->AbilityActorInfo->AvatarActor.Get();
 		// 获得 PlayerController
 		Props.SourceController = Props.SourceASC->AbilityActorInfo->PlayerController.Get();
-		
-		if (Props.SourceAvatarActor == nullptr && Props.SourceController != nullptr)
+		if (Props.SourceController == nullptr && Props.SourceAvatarActor != nullptr)
 		{
 			// 判断是否能将 Actor 转换为 Pawn，如果可以则获得这个 Pawn 的 Controller
 			if (const APawn* SourcePawn = Cast<APawn>(Props.SourceAvatarActor))
@@ -208,8 +207,12 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperti
 {
 	if (EffectProperties.SourceCharacter != EffectProperties.TargetCharacter)
 	{
-		AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(EffectProperties.SourceCharacter->Controller);
-		if (AuraPC)
+		if (AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(EffectProperties.SourceCharacter->Controller))
+		{
+			AuraPC->ShowDamageNumber(Damage, EffectProperties.TargetCharacter, bCriticalHit, bBlockedHit);
+		}
+		
+		if (AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(EffectProperties.TargetCharacter->Controller))
 		{
 			AuraPC->ShowDamageNumber(Damage, EffectProperties.TargetCharacter, bCriticalHit, bBlockedHit);
 		}

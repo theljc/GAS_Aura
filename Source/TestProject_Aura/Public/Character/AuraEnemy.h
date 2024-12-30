@@ -31,6 +31,10 @@ public:
 	virtual int32 GetPlayerLevel() override;
 	
 	void HitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount);
+
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+
+	virtual AActor* GetCombatTarget_Implementation() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Test")
 	bool HighLight;
@@ -43,6 +47,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	float LifeSpan = 5.f;
+
+	UPROPERTY(BlueprintReadWrite, Category="Combat")
+	TObjectPtr<AActor> CombatTarget;
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;

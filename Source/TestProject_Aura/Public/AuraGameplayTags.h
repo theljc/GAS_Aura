@@ -47,11 +47,19 @@ public:
 	FGameplayTag Damage_Lighting;
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
-
+	
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
 	
 	FGameplayTag Effect_HitReact;
-	
+
+	// 和行为关联的 Tag
+	FGameplayTag Abilities_Attack;
+
+	// 和蒙太奇关联的 Tag
+	FGameplayTag Montage_Attack_Weapon;
+	FGameplayTag Montage_Attack_LeftHand;
+	FGameplayTag Montage_Attack_RightHand;
+
 protected:
 	
 private:
