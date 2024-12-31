@@ -133,7 +133,6 @@ void AAuraCharacterBase::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> DefaultG
 
 void AAuraCharacterBase::InitializeDefaultAttributes() const
 {
-	// GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red,FString(TEXT("124q35386")));
 	ApplyEffectToSelf(DefaultPrimaryGameplayEffectClass, 1.f);
 	ApplyEffectToSelf(DefaultSecondaryGameplayEffectClass, 1.f);
 	ApplyEffectToSelf(DefaultVitalGameplayEffectClass, 1.f);

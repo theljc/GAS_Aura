@@ -46,7 +46,6 @@ void UAttributeWidgetController::BroadcastAttributeValues(const FGameplayTag& At
 {
 	
 	FAuraAttributeInfo Info = AttributeInfo->FindAttributeInfoForTag(AttributeTag);
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, AttributeTag.GetTagName().ToString());
 	
 	Info.AttributeValue = Attribute.GetNumericValue(AttributeSet);
 	AttributeInfoDelegate.Broadcast(Info);

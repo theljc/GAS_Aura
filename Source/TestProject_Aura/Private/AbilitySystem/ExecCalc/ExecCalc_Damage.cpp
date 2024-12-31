@@ -130,7 +130,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	// 1 ~ 100 之间的随机数用于判断是否能够阻挡
 	const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("block:%d"), bBlocked));
 
 	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
