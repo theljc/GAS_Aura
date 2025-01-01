@@ -52,16 +52,17 @@ void AAuraCharacterBase::MultiCastHandleDeath_Implementation()
 
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetEnableGravity(true);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);;
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "124236");
 	// 死亡后溶解
 	Dissolve();
 
 	bDead = true;
-	
+
 }
 
 // Called when the game starts or when spawned
