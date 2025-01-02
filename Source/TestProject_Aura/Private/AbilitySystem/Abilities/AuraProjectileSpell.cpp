@@ -23,13 +23,13 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 }
 
-void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileLocation)
+void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileLocation, const FGameplayTag& SocketTag)
 {
-	const bool bisAuthority = GetAvatarActorFromActorInfo()->HasAuthority();
-	if (!bisAuthority) return;
+	const bool bIsAuthority = GetAvatarActorFromActorInfo()->HasAuthority();
+	if (!bIsAuthority) return;
 	
 	// 获得武器插槽的 Location
-	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FAuraGameplayTags::Get().Montage_Attack_Weapon);
+	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	FRotator SocketRotation = (ProjectileLocation - SocketLocation).Rotation();
 
 	// 设置 Location

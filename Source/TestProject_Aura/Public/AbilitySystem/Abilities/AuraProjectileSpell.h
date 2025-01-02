@@ -22,7 +22,7 @@ protected:
 	TSubclassOf<AAuraProjectile> ProjectileClass;
 
 	UFUNCTION(BlueprintCallable)
-	void SpawnProjectile(const FVector& ProjectileLocation);
+	void SpawnProjectile(const FVector& ProjectileLocation, const FGameplayTag& SocketTag);
 
 
 };

@@ -83,16 +83,38 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	"Abilities.Attack",
 	FString("攻击技能"));
 
-	GameplayTags.Montage_Attack_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(
-	"Montage.Attack.Weapon",
-	FString("用武器攻击的动画"));
+	// Combat Socket
+	GameplayTags.CombatSocket_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"CombatSocket.Weapon",
+	FString("用武器攻击的动画插槽"));
 
-	GameplayTags.Montage_Attack_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
-	"Montage.Attack.LeftHand",
-	FString("用左手攻击的动画"));
+	GameplayTags.CombatSocket_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"CombatSocket.LeftHand",
+	FString("用左手攻击的动画插槽"));
 	
-	GameplayTags.Montage_Attack_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
-	"Montage.Attack.RightHand",
-	FString("用右手攻击的动画"));
+	GameplayTags.CombatSocket_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"CombatSocket.RightHand",
+	FString("用右手攻击的动画插槽"));
+
+	GameplayTags.CombatSocket_Tail = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"CombatSocket.Tail",
+	FString("用尾巴攻击的动画插槽"));
+
+	// Montage Tags
+	GameplayTags.Montage_Attack_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Montage.Attack.1",
+	FString("攻击动画 1"));
+
+	GameplayTags.Montage_Attack_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Montage.Attack.2",
+	FString("攻击动画 2"));
+
+	GameplayTags.Montage_Attack_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Montage.Attack.3",
+	FString("攻击动画 3"));
+
+	GameplayTags.Montage_Attack_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Montage.Attack.4",
+	FString("攻击动画 4"));
 	
 }
