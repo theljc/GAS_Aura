@@ -23,7 +23,7 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 }
 
-void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileLocation, const FGameplayTag& SocketTag)
+void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileLocation, const FGameplayTag& SocketTag, bool bOverridePitch, float PitchOverride)
 {
 	const bool bIsAuthority = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!bIsAuthority) return;
@@ -31,6 +31,10 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileLocation, co
 	// 获得武器插槽的 Location
 	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	FRotator SocketRotation = (ProjectileLocation - SocketLocation).Rotation();
+	if (bOverridePitch)
+	{
+		SocketRotation.Pitch = PitchOverride;
+	}
 
 	// 设置 Location
 	FTransform SpawnTransform;

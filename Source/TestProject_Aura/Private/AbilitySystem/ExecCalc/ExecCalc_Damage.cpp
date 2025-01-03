@@ -106,7 +106,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		const FGameplayEffectAttributeCaptureDefinition CaptureDef = AuraDamageStatics().TagsToCaptureDef[ResistanceTag];
 
 		// GetSetByCallerMagnitude 如果没有找到此伤害类型，会返回 0
-		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key);	
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key, false);	
 		
 		float Resistance = 0.f;
 		// 捕获属性的值保存到 Resistance 变量中
