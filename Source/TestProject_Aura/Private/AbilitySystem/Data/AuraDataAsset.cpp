@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Data/AuraDataAsset.h"
 
+#include "TestProject_Aura/AuraLogChannels.h"
+
 FAuraAttributeInfo UAuraDataAsset::FindAttributeInfoForTag(const FGameplayTag& AttributeTag, bool bLogNotFound) const
 {
 	// 遍历数组，用 MatchesTagExact 匹配 Tag，匹配成功则返回对应的信息
@@ -16,7 +18,7 @@ FAuraAttributeInfo UAuraDataAsset::FindAttributeInfoForTag(const FGameplayTag& A
 	
 	if (bLogNotFound)
 	{
-		UE_LOG(LogTemp, Error, TEXT("AttributeTag [%s] not found in [%s]"), *AttributeTag.ToString(), *GetNameSafe(this));
+		UE_LOG(LogAura, Error, TEXT("AttributeTag [%s] not found in [%s]"), *AttributeTag.ToString(), *GetNameSafe(this));
 	}
 	
 	return FAuraAttributeInfo();

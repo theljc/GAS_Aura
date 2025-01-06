@@ -7,6 +7,9 @@
 #include "AuraAbilitySystemComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FAbilitiesGiven, UAuraAbilitySystemComponent*);
+DECLARE_DELEGATE_OneParam(FForEachAbilities, const FGameplayAbilitySpec&);
+
 /**
  * 
  */
@@ -25,11 +28,23 @@ public:
 	// 松开指定按键时不会激活 GA ，但也需要通知
 	void AbilityInputTagReleased(const FGameplayTag& Tags);
 
+	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& Spec);
+	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& Spec);
+
+	bool bStartupAbilitiesGiven = false;
+	
+	FEffectAssetTags EffectAssetTags;
+
+	FAbilitiesGiven AbilitiesGivenDelegate;
+
+	void ForEachAbilities(const FForEachAbilities& Delegate);
+
+
+	
+protected:
 	// RPC 函数，绑定委托时使客户端也能够调用此函数
 	UFUNCTION(Client, Reliable)
 	void ClientOnEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle) const;
 
-
-	FEffectAssetTags EffectAssetTags;
-
+	virtual void OnRep_ActivateAbilities() override;
 };

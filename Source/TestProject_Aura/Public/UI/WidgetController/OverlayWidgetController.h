@@ -6,6 +6,10 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "OverlayWidgetController.generated.h"
 
+class UAuraAbilitySystemComponent;
+class UAbilityInfo;
+struct FAuraAbilityInfo;
+
 USTRUCT(BlueprintType)
 struct FUIWidgetRow:public FTableRowBase
 {
@@ -33,6 +37,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float,
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxManaChangedSignature, float, NewMaxMana);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, Info);
 
 
 /**
@@ -62,17 +67,25 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FMessageWidgetRowSignature MessageWidgetRow;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FAbilityInfoSignature AbilityInfoDelegate;
 	
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
+	
 	// void HealthChanged(const FOnAttributeChangeData& Data) const;
 	// void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
 	// void ManaChanged(const FOnAttributeChangeData& Data) const;
 	// void MaxManaChanged(const FOnAttributeChangeData& Data) const;
 
+	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraASC);
+	
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, FGameplayTag Tag);
 	

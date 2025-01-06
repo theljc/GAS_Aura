@@ -5,6 +5,7 @@
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 
 void UOverlayWidgetController::BroadCastInitialValues()
 {
@@ -46,33 +47,55 @@ void UOverlayWidgetController::BindCallBacksDependencies()
 	);
 
 	
-	// AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxHealthAttribute()).AddUObject(this,&UOverlayWidgetController::MaxHealthChanged);
-	// AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetManaAttribute()).AddUObject(this,&UOverlayWidgetController::ManaChanged);
-	// AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxManaAttribute()).AddUObject(this,&UOverlayWidgetController::MaxManaChanged);
-
-	// 用 lambda 函数绑定委托
-	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda(
-		[this](const FGameplayTagContainer& TagContainer)
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		if (AuraASC->bStartupAbilitiesGiven)
 		{
-			for (FGameplayTag Tag : TagContainer)
-			{
-				FGameplayTag Message = FGameplayTag::RequestGameplayTag("Message");
-				if (Tag.MatchesTag(Message))
-				{
-					const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
-					if (Row != nullptr)
-					{
-						MessageWidgetRow.Broadcast(*Row);
-					}
-				}
-				
-				// FString String = FString::Printf(TEXT("GamePlay Tag: %s"), *Tag.ToString());
-				// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, String);
-
-			}
+			OnInitializeStartupAbilities(AuraASC);
 		}
-	);
+		else
+		{
+			AuraASC->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::OnInitializeStartupAbilities);
+		}
+
+		// 用 lambda 函数绑定委托
+		AuraASC->EffectAssetTags.AddLambda(
+			[this](const FGameplayTagContainer& TagContainer)
+			{
+				for (FGameplayTag Tag : TagContainer)
+				{
+					FGameplayTag Message = FGameplayTag::RequestGameplayTag("Message");
+					if (Tag.MatchesTag(Message))
+					{
+						const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
+						if (Row != nullptr)
+						{
+							MessageWidgetRow.Broadcast(*Row);
+						}
+					}
+					
+					// FString String = FString::Printf(TEXT("GamePlay Tag: %s"), *Tag.ToString());
+					// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, String);
+
+				}
+			}
+		);
+	}
 	
+}
+
+void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraASC)
+{
+	if (!AuraASC->bStartupAbilitiesGiven) return;
+
+	FForEachAbilities BroadCastDelegate;
+	BroadCastDelegate.BindLambda([this, AuraASC](const FGameplayAbilitySpec& AbilitySpec)
+	{
+		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AuraASC->GetAbilityTagFromSpec(AbilitySpec));
+		Info.InputTag = AuraASC->GetInputTagFromSpec(AbilitySpec);
+		AbilityInfoDelegate.Broadcast(Info);
+	});
+	AuraASC->ForEachAbilities(BroadCastDelegate);
 }
 
 // void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const

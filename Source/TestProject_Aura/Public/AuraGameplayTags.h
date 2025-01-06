@@ -55,6 +55,11 @@ public:
 	// 和行为关联的 Tag
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_Summon;
+	
+	FGameplayTag Abilities_Fire_FireBolt;
+
+	// 冷却时间
+	FGameplayTag CoolDown_Fire_FireBolt;
 
 	// 和蒙太奇关联的 Tag
 	FGameplayTag CombatSocket_Weapon;

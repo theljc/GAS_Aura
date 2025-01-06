@@ -87,6 +87,17 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	"Abilities.Summon",
 	FString("召唤技能"));
 
+	GameplayTags.Abilities_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Fire.FireBolt",
+	FString("火球技能"));
+
+
+	// 冷却时间
+	GameplayTags.CoolDown_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"CoolDown.Fire.FireBolt",
+	FString("火球技能冷却时间"));
+
+	
 	// Combat Socket
 	GameplayTags.CombatSocket_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	"CombatSocket.Weapon",
