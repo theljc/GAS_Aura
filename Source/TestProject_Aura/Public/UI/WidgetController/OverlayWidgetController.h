@@ -70,6 +70,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FAbilityInfoSignature AbilityInfoDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|XP")
+	FOnAttributeChangedSignature LevelUpInfoDelegate;
 	
 protected:
 
@@ -85,6 +88,9 @@ protected:
 	// void MaxManaChanged(const FOnAttributeChangeData& Data) const;
 
 	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraASC);
+
+	// 经验值改变时计算百分比
+	void OnXPChanged(int32 NewXP);
 	
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, FGameplayTag Tag);

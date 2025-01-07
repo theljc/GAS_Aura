@@ -6,6 +6,8 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
+#include "Player/AuraPlayerState.h"
 
 void UOverlayWidgetController::BroadCastInitialValues()
 {
@@ -20,6 +22,10 @@ void UOverlayWidgetController::BroadCastInitialValues()
 void UOverlayWidgetController::BindCallBacksDependencies()
 {
 	const UAuraAttributeSet* AuraAttributeSet = CastChecked<UAuraAttributeSet>(AttributeSet);
+	
+	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
+	
 	// 绑定 lambda 回调函数在生命值变化的时候发出通知	
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data)
@@ -98,22 +104,27 @@ void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemCo
 	AuraASC->ForEachAbilities(BroadCastDelegate);
 }
 
-// void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
-// {
-// 	OnHealthChanged.Broadcast(Data.NewValue);
-// }
-//
-// void UOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
-// {
-// 	OnMaxHealthChanged.Broadcast(Data.NewValue);
-// }
-//
-// void UOverlayWidgetController::ManaChanged(const FOnAttributeChangeData& Data) const
-// {
-// 	OnManaChanged.Broadcast(Data.NewValue);
-// }
-//
-// void UOverlayWidgetController::MaxManaChanged(const FOnAttributeChangeData& Data) const
-// {
-// 	OnMaxManaChanged.Broadcast(Data.NewValue);
-// }
+void UOverlayWidgetController::OnXPChanged(int32 NewXP)
+{
+	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+	ULevelUpInfo* LevelUpInfo = AuraPlayerState->LevelUpInfo;
+	checkf(LevelUpInfo, TEXT("LevelUpInfo Not Found"));
+
+	// 当前等级和最大等级
+	const int32 Level = LevelUpInfo->FindLevelForXP(NewXP);
+	const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num();
+
+	if (Level <= MaxLevel && Level > 0)
+	{
+		// 当前等级升级所需经验和前一级升级所需经验
+		const int32 LevelUpRequirement = LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement;
+		const int32 PreviousLevelUpRequirement = LevelUpInfo->LevelUpInformation[Level - 1].LevelUpRequirement;
+
+		const int32 DeltaLevelUpRequirement = LevelUpRequirement - PreviousLevelUpRequirement;
+		const int32 XPForThisLevel = NewXP - PreviousLevelUpRequirement;
+
+		const float XPBarPercent = static_cast<float>(XPForThisLevel) / static_cast<float>(DeltaLevelUpRequirement);
+
+		LevelUpInfoDelegate.Broadcast(XPBarPercent);
+	}
+}

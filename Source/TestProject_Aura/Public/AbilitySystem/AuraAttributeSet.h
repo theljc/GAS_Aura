@@ -172,6 +172,9 @@ public:
 	FGameplayAttributeData InComingDamage;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, InComingDamage);  // 用属性访问器来操作属性
 
+	UPROPERTY(BlueprintReadOnly, Category="Meta Attributes")
+	FGameplayAttributeData InComingXP;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, InComingXP);  // 用属性访问器来操作属性
 	
 	// 当变量从服务器复制到客户端时会调用此 OnRep 函数，可以接收一个参数作为旧的变量值
 	UFUNCTION()
@@ -238,5 +241,7 @@ public:
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 	void ShowFloatingText(const FEffectProperties& Properties, float Damage, bool bBlockedHit, bool bCriticalHit);
+	// 用于增加经验值
+	void SendXPEvent(const FEffectProperties& Properties);
 	
 };

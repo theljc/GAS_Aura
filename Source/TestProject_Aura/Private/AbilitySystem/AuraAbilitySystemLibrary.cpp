@@ -157,3 +157,15 @@ bool UAuraAbilitySystemLibrary::IsNotFriend(const AActor* FirstActor, const AAct
 	const bool bFriend = bBothPlayer || bBothEnemy;
 	return !bFriend;
 }
+
+int32 UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 CharacterLevel)
+{
+	const UCharacterClassInfo* CharacterInfo = GetCharacterClassInfo(WorldContextObject);
+	if (CharacterInfo == nullptr)
+		return 0;
+
+	const FCharacterClassDefaultInfo Info = CharacterInfo->GetCharacterClass(CharacterClass);
+	const float XPReward = Info.XPReward.GetValueAtLevel(CharacterLevel);
+
+	return static_cast<int32>(XPReward);
+}

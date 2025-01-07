@@ -22,6 +22,7 @@ public:
 	
 	// 添加角色初始拥有的 GA
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities);
+	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities);
 
 	// 按住指定按键时激活 GA
 	void AbilityInputTagHeld(const FGameplayTag& Tags);
