@@ -25,6 +25,10 @@ void UOverlayWidgetController::BindCallBacksDependencies()
 	
 	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
 	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
+	AuraPlayerState->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel)
+	{
+		OnPlayerLevelChanged.Broadcast(NewLevel);
+	});
 	
 	// 绑定 lambda 回调函数在生命值变化的时候发出通知	
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthAttribute()).AddLambda(

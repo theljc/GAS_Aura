@@ -28,7 +28,7 @@ public:
 	virtual void UnHighLightActor() override;
 
 	// 重写 ICombatInterface 接口的函数
-	virtual int32 GetPlayerLevel() override;
+	virtual int32 GetPlayerLevel_Implementation() override;
 	
 	void HitReactTagChanged(const FGameplayTag CallBackTag, int32 NewCount);
 

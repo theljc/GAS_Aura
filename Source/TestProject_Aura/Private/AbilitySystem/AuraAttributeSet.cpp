@@ -207,8 +207,35 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		const float LocalInComingXP = GetInComingXP();
 		SetInComingXP(0.f);
-		if (EffectProperties.SourceCharacter->Implements<UPlayerInterface>())
+		if (EffectProperties.SourceCharacter->Implements<UPlayerInterface>() && EffectProperties.SourceCharacter->Implements<UCombatInterface>())
 		{
+			const int32 CurrentLevel = ICombatInterface::Execute_GetPlayerLevel(EffectProperties.SourceCharacter);
+			const int32 CurrentXP = IPlayerInterface::Execute_GetXP(EffectProperties.SourceCharacter);
+
+			const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(EffectProperties.SourceCharacter, CurrentXP + LocalInComingXP);
+
+			// 计算升了多少级
+			const int32 NumsLevelUps = NewLevel - CurrentLevel;
+			if (NumsLevelUps > 0)
+			{
+				/* 升级时的操作 */
+
+				// 获得技能点
+				const int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(EffectProperties.SourceCharacter, CurrentLevel);
+				const int32 SpellPointsAward = IPlayerInterface::Execute_GetSpellPointsReward(EffectProperties.SourceCharacter, CurrentLevel);
+
+				// 添加等级和技能点
+				IPlayerInterface::Execute_AddToPlayerLevel(EffectProperties.SourceCharacter, NumsLevelUps);
+				IPlayerInterface::Execute_AddToAttributePoints(EffectProperties.SourceCharacter, AttributePointsReward);
+				IPlayerInterface::Execute_AddToSpellPoints(EffectProperties.SourceCharacter, SpellPointsAward);
+
+				// 升级时生命值和魔法值回满
+				SetHealth(GetMaxHealth());
+				SetMana(GetMaxMana());
+				
+				IPlayerInterface::Execute_LevelUp(EffectProperties.SourceCharacter);
+			}
+			
 			IPlayerInterface::Execute_AddToXP(EffectProperties.SourceCharacter, LocalInComingXP);
 		}
 	}
@@ -233,9 +260,9 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperti
 
 void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Properties)
 {
-	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Properties.TargetCharacter))
+	if (Properties.TargetCharacter->Implements<UCombatInterface>())
 	{
-		const int32 TargetLevel = CombatInterface->GetPlayerLevel();
+		const int32 TargetLevel = ICombatInterface::Execute_GetPlayerLevel(Properties.TargetCharacter);
 		const ECharacterClass TargetClass = ICombatInterface::Execute_GetCharacterClass(Properties.TargetCharacter);
 		const int32 XPReward = UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(Properties.TargetCharacter, TargetClass, TargetLevel);
 
