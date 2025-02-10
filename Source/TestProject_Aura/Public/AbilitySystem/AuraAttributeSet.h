@@ -68,6 +68,8 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	
 	// 在 Attribute 发生变化后会调用此函数
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	// Map 保存 GameplayTag 和 GameplayAttribute 函数指针的映射
@@ -243,5 +245,8 @@ private:
 	void ShowFloatingText(const FEffectProperties& Properties, float Damage, bool bBlockedHit, bool bCriticalHit);
 	// 用于增加经验值
 	void SendXPEvent(const FEffectProperties& Properties);
+
+	bool bTopOffHealth = false;
+	bool bTopOffMana = false;
 	
 };

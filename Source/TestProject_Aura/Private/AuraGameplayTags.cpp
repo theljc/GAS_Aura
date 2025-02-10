@@ -28,13 +28,23 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Attribute_Secondary_ManaRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag("Attribute.Secondary.ManaRegeneration", FString("次要属性，每秒回蓝量"));
 	
 	// 输入 Tag
-	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag("InputTag.LMB", FString("输入Tag，鼠标左键"));
-	GameplayTags.InputTag_RMB = UGameplayTagsManager::Get().AddNativeGameplayTag("InputTag.RMB", FString("输入Tag，鼠标右键"));
-	GameplayTags.InputTag_1 = UGameplayTagsManager::Get().AddNativeGameplayTag("InputTag.1", FString("输入Tag，数字键1"));
-	GameplayTags.InputTag_2 = UGameplayTagsManager::Get().AddNativeGameplayTag("InputTag.2", FString("输入Tag，数字键2"));
-	GameplayTags.InputTag_3 = UGameplayTagsManager::Get().AddNativeGameplayTag("InputTag.3", FString("输入Tag，数字键3"));
-	GameplayTags.InputTag_4 = UGameplayTagsManager::Get().AddNativeGameplayTag("InputTag.4", FString("输入Tag，数字键4"));
-
+	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		"InputTag.LMB", FString("输入Tag，鼠标左键"));
+	GameplayTags.InputTag_RMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		"InputTag.RMB", FString("输入Tag，鼠标右键"));
+	GameplayTags.InputTag_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		"InputTag.1", FString("输入Tag，数字键1"));
+	GameplayTags.InputTag_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		"InputTag.2", FString("输入Tag，数字键2"));
+	GameplayTags.InputTag_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		"InputTag.3", FString("输入Tag，数字键3"));
+	GameplayTags.InputTag_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		"InputTag.4", FString("输入Tag，数字键4"));
+	GameplayTags.InputTag_Passive_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		"InputTag.Passive.1", FString("输入Tag，被动技能数字键1"));
+	GameplayTags.InputTag_Passive_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			"InputTag.Passive.2", FString("输入Tag，被动技能数字键2"));
+	
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		"Damage",
 		FString("伤害"));
@@ -91,10 +101,45 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	"Abilities.Summon",
 	FString("召唤技能"));
 
+	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.HitReact",
+	FString("受击技能"));
+
+	GameplayTags.Abilities_Status_Locked = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Status.Locked",
+	FString("技能锁定状态"));
+
+	GameplayTags.Abilities_Status_Eligible = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Status.Eligible",
+	FString("技能可解锁状态"));
+
+	GameplayTags.Abilities_Status_Unlocked = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Status.Unlocked",
+	FString("技能解锁状态"));
+
+	GameplayTags.Abilities_Status_Equipped = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Status.Equipped",
+	FString("技能装备状态"));
+
+	GameplayTags.Abilities_Type_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Type.None",
+	FString("技能类型：无"));
+
+	GameplayTags.Abilities_Type_Offensive = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Type.Offensive",
+	FString("技能类型：攻击型"));
+
+	GameplayTags.Abilities_Type_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Type.Passive",
+	FString("技能类型：被动技能"));
+	
 	GameplayTags.Abilities_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	"Abilities.Fire.FireBolt",
 	FString("火球技能"));
 
+	GameplayTags.Abilities_Lighting_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Lighting.Electrocute",
+	FString("闪电技能"));
 
 	// 冷却时间
 	GameplayTags.CoolDown_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(

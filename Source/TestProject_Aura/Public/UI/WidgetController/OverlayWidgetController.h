@@ -30,7 +30,7 @@ struct FUIWidgetRow:public FTableRowBase
 };
 
 class UAuraUserWidget;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, float, NewValue);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature, float, NewMaxHealth);
@@ -38,7 +38,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float,
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxManaChangedSignature, float, NewMaxMana);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, Info);
 
 
 /**
@@ -69,9 +68,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FMessageWidgetRowSignature MessageWidgetRow;
 
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
-	FAbilityInfoSignature AbilityInfoDelegate;
-
 	UPROPERTY(BlueprintAssignable, Category = "GAS|XP")
 	FOnAttributeChangedSignature LevelUpInfoDelegate;
 
@@ -83,15 +79,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
-	TObjectPtr<UAbilityInfo> AbilityInfo;
-	
 	// void HealthChanged(const FOnAttributeChangeData& Data) const;
 	// void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
 	// void ManaChanged(const FOnAttributeChangeData& Data) const;
 	// void MaxManaChanged(const FOnAttributeChangeData& Data) const;
-
-	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraASC);
 
 	// 经验值改变时计算百分比
 	void OnXPChanged(int32 NewXP);

@@ -7,8 +7,9 @@
 #include "AuraAbilitySystemComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer&);
-DECLARE_MULTICAST_DELEGATE_OneParam(FAbilitiesGiven, UAuraAbilitySystemComponent*);
+DECLARE_MULTICAST_DELEGATE(FAbilitiesGiven);
 DECLARE_DELEGATE_OneParam(FForEachAbilities, const FGameplayAbilitySpec&);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FAbilityStatusChanged, const FGameplayTag&, const FGameplayTag&);
 
 /**
  * 
@@ -31,6 +32,9 @@ public:
 
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& Spec);
 	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& Spec);
+	static FGameplayTag GetStatusFromSpec(const FGameplayAbilitySpec& Spec);
+
+	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 
 	bool bStartupAbilitiesGiven = false;
 	
@@ -38,14 +42,25 @@ public:
 
 	FAbilitiesGiven AbilitiesGivenDelegate;
 
+	FAbilityStatusChanged AbilityStatusChangedDelegate;
+
 	void ForEachAbilities(const FForEachAbilities& Delegate);
 
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 
+	// RPC 函数，只在服务器上执行
+	UFUNCTION(Server, Reliable)
+	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
+
+	void UpdateAbilityStatus(int32 Level);
 	
 protected:
-	// RPC 函数，绑定委托时使客户端也能够调用此函数
+	// RPC 函数，客户端上执行，绑定委托时使客户端也能够调用此函数
 	UFUNCTION(Client, Reliable)
 	void ClientOnEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle) const;
+
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAbilityStatus(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag);
 
 	virtual void OnRep_ActivateAbilities() override;
 };

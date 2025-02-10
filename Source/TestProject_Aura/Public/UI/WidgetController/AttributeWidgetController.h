@@ -23,7 +23,13 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Ability System|Attribute")
 	FAttributeInfoSignature AttributeInfoDelegate;
+	
+	UPROPERTY(BlueprintAssignable, Category="Ability System|Attribute")
+	FOnPlayerStatChangedSignature AttributePointsChangedDelegate;
 
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAuraDataAsset> AttributeInfo;

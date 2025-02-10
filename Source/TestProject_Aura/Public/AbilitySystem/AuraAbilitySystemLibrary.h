@@ -8,6 +8,10 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class UAbilityInfo;
+class AAuraHUD;
+struct FAuraWidgetControllerParam;
+class USpellMenuWidgetController;
 class UAttributeWidgetController;
 class UOverlayWidgetController;
 /**
@@ -18,11 +22,18 @@ class TESTPROJECT_AURA_API UAuraAbilitySystemLibrary : public UBlueprintFunction
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|WidgetController")
+
+	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|WidgetController", meta = (DefaultToSelf="WorldContextObject"))
+	static bool MakeWidgetControllerParam(const UObject* WorldContextObject, FAuraWidgetControllerParam& OutWidgetControllerParam, AAuraHUD*& OutHUD);
+	
+	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|WidgetController", meta = (DefaultToSelf="WorldContextObject"))
 	static UOverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
 
-	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|WidgetController")
+	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|WidgetController", meta = (DefaultToSelf="WorldContextObject"))
 	static UAttributeWidgetController* GetAttributeWidgetController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|WidgetController", meta = (DefaultToSelf="WorldContextObject"))
+	static USpellMenuWidgetController* GetSpellMenuWidgetController(const UObject* WorldContextObject);
 
 	// 静态函数，初始化默认属性
 	UFUNCTION(BlueprintCallable, Category = "AbilitySystemLibrary|CharacterClassDefaults")
@@ -33,6 +44,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "AbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
+	
+	UFUNCTION(BlueprintCallable, Category = "AbilitySystemLibrary|CharacterClassDefaults")
+	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|GameplayEffects")
 	static bool IsBlockedHit (const FGameplayEffectContextHandle& EffectContextHandle);
