@@ -12,6 +12,25 @@
 #include "LevelInstance/LevelInstanceTypes.h"
 
 
+FString UAuraProjectileSpell::GetDescription(int32 Level)
+{
+	const int32 Damage = DamageTypes[FAuraGameplayTags::Get().Damage_Fire].GetValueAtLevel(Level);
+	if (Level == 1)
+	{
+		return FString::Printf(TEXT("<Default>%s</> Level：<Level>%d</> Damage：<Damage>%d</>"), L"FireBolt Skill", Level, Damage);
+	}
+	else
+	{
+		return FString::Printf(TEXT("<Default>%s</> Level：<Level>%d</> Damage：<Damage>%d</>"), L"FireBolt Skill", Level, Damage);
+	}
+}
+
+FString UAuraProjectileSpell::GetNextLevelDescription(int32 Level)
+{
+	const int32 Damage = DamageTypes[FAuraGameplayTags::Get().Damage_Fire].GetValueAtLevel(Level);
+	return FString::Printf(TEXT("<Default>%s</> NextLevel Damage：<Damage>%d</>"), L"FireBolt Skill", Damage);
+}
+
 void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                            const FGameplayAbilityActorInfo* ActorInfo,
                                            const FGameplayAbilityActivationInfo ActivationInfo,
