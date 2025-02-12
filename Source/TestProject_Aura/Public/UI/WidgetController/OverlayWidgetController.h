@@ -86,6 +86,8 @@ protected:
 
 	// 经验值改变时计算百分比
 	void OnXPChanged(int32 NewXP);
+
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PreviousSlot);
 	
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, FGameplayTag Tag);

@@ -10,6 +10,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContaine
 DECLARE_MULTICAST_DELEGATE(FAbilitiesGiven);
 DECLARE_DELEGATE_OneParam(FForEachAbilities, const FGameplayAbilitySpec&);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChanged, const FGameplayTag&, const FGameplayTag&, int32);
+DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquipped, const FGameplayTag&, const FGameplayTag&, const FGameplayTag&, const FGameplayTag&);
 
 /**
  * 
@@ -33,6 +34,8 @@ public:
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& Spec);
 	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& Spec);
 	static FGameplayTag GetStatusFromSpec(const FGameplayAbilitySpec& Spec);
+	FGameplayTag GetStatusFromAbilityTag(const FGameplayTag& AbilityTag);
+	FGameplayTag GetSlotFromAbilityTag(const FGameplayTag& AbilityTag);
 
 	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 
@@ -43,6 +46,8 @@ public:
 	FAbilitiesGiven AbilitiesGivenDelegate;
 
 	FAbilityStatusChanged AbilityStatusChangedDelegate;
+
+	FAbilityEquipped AbilityEquippedDelegate;
 
 	void ForEachAbilities(const FForEachAbilities& Delegate);
 
@@ -57,7 +62,16 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerSpendSpellPoints(const FGameplayTag& AbilityTag);
 
+	UFUNCTION(Server, Reliable)
+	void ServerEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& SlotTag);
+	
+	void ClientEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& SlotTag, const FGameplayTag& PreviousSlotTag);
+
 	bool GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
+
+	void ClearSlot(FGameplayAbilitySpec* AbilitySpec);
+	void ClearAbilityOfSlot(const FGameplayTag& Slot);
+	bool AbilityHasSlot(FGameplayAbilitySpec* AbilitySpec, const FGameplayTag& SlotTag);
 	
 protected:
 	// RPC 函数，客户端上执行，绑定委托时使客户端也能够调用此函数
