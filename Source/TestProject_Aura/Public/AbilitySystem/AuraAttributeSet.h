@@ -241,6 +241,10 @@ public:
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
 
 private:
+	void HandleInComingDamage(const FEffectProperties& Props);
+	void HandleInComingXP(const FEffectProperties& Props);
+	void Debuff(const FEffectProperties& Props);
+
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 	void ShowFloatingText(const FEffectProperties& Properties, float Damage, bool bBlockedHit, bool bCriticalHit);
 	// 用于增加经验值

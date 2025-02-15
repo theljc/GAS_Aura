@@ -12,26 +12,7 @@
 #include "LevelInstance/LevelInstanceTypes.h"
 
 
-FString UAuraProjectileSpell::GetDescription(int32 Level)
-{
-	const int32 Damage = DamageTypes[FAuraGameplayTags::Get().Damage_Fire].GetValueAtLevel(Level);
-	if (Level == 1)
-	{
-		return FString::Printf(TEXT("<Default>%s</> Level:<Level>%d</> Damage:<Damage>%d</>"), L"FireBolt Skill", Level, Damage);
-	}
-	else
-	{
-		return FString::Printf(TEXT("12<Default>%s</> Level:<Level>%d</> Damage:<Damage>%d</>"), L"FireBolt Skill", Level, Damage);
-	}
-}
 
-FString UAuraProjectileSpell::GetNextLevelDescription(int32 Level)
-{
-	const int32 Damage = DamageTypes[FAuraGameplayTags::Get().Damage_Fire].GetValueAtLevel(Level);
-	return FString::Printf(TEXT(""
-							 "11<Default>%s</> NextLevel Damage:<Damage>%d</>"),
-							 L"FireBolt Skill", Damage);
-}
 
 void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                            const FGameplayAbilityActorInfo* ActorInfo,
@@ -71,28 +52,24 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileLocation, co
 		Cast<APawn>(GetOwningActorFromActorInfo()),
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
-	UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-	FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
-
-	EffectContextHandle.SetAbility(this);
-	EffectContextHandle.AddSourceObject(Projectile);
-	TArray<TWeakObjectPtr<AActor>> Actors;
-	Actors.Add(Projectile);
-	EffectContextHandle.AddActors(Actors);
-	FHitResult Hit;
-	EffectContextHandle.AddHitResult(Hit);
-	Hit.Location = ProjectileLocation;
+	// UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+	// FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+	//
+	// EffectContextHandle.SetAbility(this);
+	// EffectContextHandle.AddSourceObject(Projectile);
+	// TArray<TWeakObjectPtr<AActor>> Actors;
+	// Actors.Add(Projectile);
+	// EffectContextHandle.AddActors(Actors);
+	// FHitResult Hit;
+	// EffectContextHandle.AddHitResult(Hit);
+	// Hit.Location = ProjectileLocation;
+	//
+	// FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
+	//
+	// const float ScaleDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+	// UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageType, ScaleDamage);
 	
-	FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
-
-	for (auto Pair : DamageTypes)
-	{
-		const float ScaleDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaleDamage);
-		
-	}
-
-	Projectile->DamageEffectSpecHandle = SpecHandle;
+	Projectile->DamageEffectParam = MakeDamageEffectParamsFromClassDefault();
 	
 	// 在所有属性设置完后生成
 	Projectile->FinishSpawning(SpawnTransform);

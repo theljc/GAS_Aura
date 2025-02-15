@@ -10,6 +10,7 @@
 #include "MovieSceneTracksComponentTypes.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/WindDirectionalSourceComponent.h"
 #include "GameFramework/Character.h"
@@ -101,6 +102,11 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 		bAutoRunning = false;
 	}
 
+	if (GetASC())
+	{
+		GetASC()->AbilityInputTagPressed(InputTag);
+	}
+	
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
@@ -108,14 +114,11 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	// 不是鼠标左键
 	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetASC())
-		{
-			GetASC()->AbilityInputTagHeld(InputTag);
-		}
+		if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
 		return;
 	}
 
-	GetASC()->AbilityInputTagReleased(InputTag);
+	if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
 
 	// 按住的不是鼠标左键或 Shift
 	if (!bTargeting && !bShiftKeyDown)
@@ -141,6 +144,9 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 					bAutoRunning = true;
 				}
 			}
+
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+
 			// 设置为自动寻路
 			FollowTime = 0.f;
 			bTargeting = false;

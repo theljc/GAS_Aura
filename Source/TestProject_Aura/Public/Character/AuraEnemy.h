@@ -63,7 +63,7 @@ protected:
 	// 初始化敌人类的属性
 	virtual void InitializeDefaultAttributes() const override;
 
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpluse) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Default Class")
 	int32 Level = 1;

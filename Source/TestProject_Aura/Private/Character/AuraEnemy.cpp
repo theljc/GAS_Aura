@@ -141,12 +141,15 @@ void AAuraEnemy::BeginPlay()
 void AAuraEnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
+
 	// 调用 AbilityActorInfoSet 表示 ActorInfo 已经设置好了
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	if (HasAuthority())
 	{
 		InitializeDefaultAttributes();
 	}
+
+	OnASCRegistered.Broadcast(AbilitySystemComponent);
 }
 
 void AAuraEnemy::InitializeDefaultAttributes() const
@@ -156,7 +159,7 @@ void AAuraEnemy::InitializeDefaultAttributes() const
 	
 }
 
-void AAuraEnemy::Die()
+void AAuraEnemy::Die(const FVector& DeathImpluse)
 {
 	SetLifeSpan(LifeSpan);
 
@@ -165,5 +168,5 @@ void AAuraEnemy::Die()
 		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
 	}
 	
-	Super::Die();
+	Super::Die(DeathImpluse);
 }

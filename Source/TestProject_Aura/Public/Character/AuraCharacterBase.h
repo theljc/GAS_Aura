@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbility.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "AuraCharacterBase.generated.h"
@@ -26,7 +27,7 @@ public:
 	UAttributeSet* GetAttributeSet() const { return AttributeSet;}
 
 	/* Combat Interface */
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpluse) override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 	virtual bool IsDead_Implementation() const override;
@@ -37,10 +38,15 @@ public:
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void IncrementMinionCount_Implementation(const int32 Amount) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
+	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
+	virtual FOnDeath& GetOnDeathDelegate() override;
 	/* end Combat Interface */
+
+	FOnASCRegistered OnASCRegistered;
+	FOnDeath OnDeath;
 	
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void MultiCastHandleDeath();
+	virtual void MultiCastHandleDeath(const FVector& DeathImpluse);
 
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TArray<FTaggedMontage> AttackMontages;
@@ -116,6 +122,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Default Class")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
 	
 private:
 	UPROPERTY(EditAnywhere, category = "Abilities")

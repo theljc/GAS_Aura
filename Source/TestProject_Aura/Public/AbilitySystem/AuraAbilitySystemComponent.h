@@ -26,6 +26,7 @@ public:
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities);
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities);
 
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	// 按住指定按键时激活 GA
 	void AbilityInputTagHeld(const FGameplayTag& Tags);
 	// 松开指定按键时不会激活 GA ，但也需要通知

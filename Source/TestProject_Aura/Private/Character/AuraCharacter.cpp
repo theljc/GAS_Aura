@@ -183,6 +183,8 @@ void AAuraCharacter::InitAbilityActorInfo()
 
 	// 调用 AbilityActorInfoSet 表示 ActorInfo 已经设置好了
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+
+	OnASCRegistered.Broadcast(AbilitySystemComponent);
 	
 	AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController());
 	if (AuraPlayerController)

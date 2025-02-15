@@ -78,6 +78,49 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	"Attribute.Resistance.Physical",
 	FString("物理伤害抗性"));
 
+	GameplayTags.Debuff_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Debuff.Burn",
+	FString("负面效果，燃烧伤害"));
+
+	GameplayTags.Debuff_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Debuff.Stun",
+	FString("负面效果，眩晕"));
+
+	GameplayTags.Debuff_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Debuff.Arcane",
+	FString("负面效果，奥术伤害"));
+
+	GameplayTags.Debuff_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Debuff.Physical",
+	FString("负面效果，物理伤害"));
+
+	GameplayTags.Debuff_Chance = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Debuff.Chance",
+	FString("负面效果几率"));
+
+	GameplayTags.Debuff_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Debuff.Damage",
+	FString("负面效果伤害"));
+
+	GameplayTags.Debuff_Frequency = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Debuff.Frequency",
+	FString("负面效果周期"));
+
+	GameplayTags.Debuff_Duration = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Debuff.Duration",
+	FString("负面效果持续时间"));
+
+	GameplayTags.DamageTypesToDebuffs.Add(
+		GameplayTags.Damage_Fire, GameplayTags.Debuff_Burn);
+	GameplayTags.DamageTypesToDebuffs.Add(
+		GameplayTags.Damage_Lighting, GameplayTags.Debuff_Stun);
+	GameplayTags.DamageTypesToDebuffs.Add(
+		GameplayTags.Damage_Arcane, GameplayTags.Debuff_Arcane);
+	GameplayTags.DamageTypesToDebuffs.Add(
+		GameplayTags.Damage_Physical, GameplayTags.Debuff_Physical);
+	
+	
+	
 	/* Meta Attribute */
 	GameplayTags.Attribute_Meta_IncomingXP = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	"Attribute.Meta.IncomingXP",

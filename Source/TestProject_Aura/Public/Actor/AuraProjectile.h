@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AuraGameplayEffectType.h"
 #include "GameplayEffectTypes.h"
 #include "../../../../../../UE5/UE_5.3/Engine/Plugins/FX/Niagara/Source/Niagara/Classes/NiagaraSystem.h"
 #include "Components/SphereComponent.h"
@@ -22,12 +23,19 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
+	// UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
+	// FGameplayEffectSpecHandle DamageEffectSpecHandle;
+
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
-	FGameplayEffectSpecHandle DamageEffectSpecHandle;
+	FDamageEffectParam DamageEffectParam;
+
+	UPROPERTY()
+	TObjectPtr<USceneComponent> HomingTargetSceneComponent;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void OnHit();
 
 	virtual void Destroyed() override;
 
