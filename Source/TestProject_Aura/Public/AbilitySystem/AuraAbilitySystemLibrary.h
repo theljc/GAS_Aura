@@ -108,6 +108,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AbilitySystemLibrary|GameplayMechanics")
 	static void GetLiveActorsWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereOrigin);
 
+	// 从 Actors 中获得距离 Origin 位置最近的 MaxTargets 个 Actor，保存在 OutClosestTargets 中
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
+	static void GetClosestTargets(int32 MaxTargets, const TArray<AActor*>& Actors, TArray<AActor*>& OutClosestTargets, const FVector& Origin);
+	
 	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|GameplayMechanics")
 	static bool IsNotFriend(const AActor* FirstActor, const AActor* SecondActor);
 
