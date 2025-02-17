@@ -4,6 +4,7 @@
 #include "Character/AuraCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
@@ -39,6 +40,8 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationRoll = false;
 
 	CharacterClass = ECharacterClass::ElementalList;
+
+	
 }
 
 void AAuraCharacter::PossessedBy(AController* NewController)
@@ -164,6 +167,42 @@ int32 AAuraCharacter::GetPlayerLevel_Implementation()
 	return AuraPlayerState->GetPlayerLevel();
 }
 
+void AAuraCharacter::OnRep_Stunned()
+{
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		const FAuraGameplayTags AuraGameplayTags = FAuraGameplayTags::Get();
+		FGameplayTagContainer BlockTags;
+		BlockTags.AddTag(AuraGameplayTags.Player_Block_CursorTrace);
+		BlockTags.AddTag(AuraGameplayTags.Player_Block_InputHeld);
+		BlockTags.AddTag(AuraGameplayTags.Player_Block_InputPressed);
+		BlockTags.AddTag(AuraGameplayTags.Player_Block_InputReleased);
+
+		if (bIsStunned)
+		{
+			AuraASC->AddLooseGameplayTags(BlockTags);
+			StunDebuffComponent->Activate();
+		}
+		else
+		{
+			AuraASC->RemoveLooseGameplayTags(BlockTags);
+			StunDebuffComponent->Deactivate();
+		}
+	}
+}
+
+void AAuraCharacter::OnRep_Burned()
+{
+	if (bIsBurned)
+	{
+		StunDebuffComponent->Activate();
+	}
+	else
+	{
+		StunDebuffComponent->Deactivate();
+	}
+}
+
 void AAuraCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -185,6 +224,8 @@ void AAuraCharacter::InitAbilityActorInfo()
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Debuff_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AAuraCharacter::StunTagChanged);
 	
 	AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController());
 	if (AuraPlayerController)

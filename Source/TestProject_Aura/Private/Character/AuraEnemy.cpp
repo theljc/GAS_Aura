@@ -33,6 +33,8 @@ AAuraEnemy::AAuraEnemy()
 	bUseControllerRotationRoll = false;
 
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+	BaseWalkSpeed = 250.f;
 	
 }
 
@@ -144,6 +146,9 @@ void AAuraEnemy::InitAbilityActorInfo()
 
 	// 调用 AbilityActorInfoSet 表示 ActorInfo 已经设置好了
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Debuff_Stun, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AAuraEnemy::StunTagChanged);
+
 	if (HasAuthority())
 	{
 		InitializeDefaultAttributes();
@@ -169,4 +174,14 @@ void AAuraEnemy::Die(const FVector& DeathImpluse)
 	}
 	
 	Super::Die(DeathImpluse);
+}
+
+void AAuraEnemy::StunTagChanged(const FGameplayTag CallBackTag, int32 NewCount)
+{
+	Super::StunTagChanged(CallBackTag, NewCount);
+
+	if (AuraAIController && AuraAIController->GetBlackboardComponent())
+	{
+		AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Stun"), bIsStunned);
+	}
 }

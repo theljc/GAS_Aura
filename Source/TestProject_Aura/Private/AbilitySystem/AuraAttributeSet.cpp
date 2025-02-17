@@ -123,7 +123,6 @@ void UAuraAttributeSet::HandleInComingDamage(const FEffectProperties& Props)
 {
 	const float LocalInComingDamage = GetInComingDamage();
 	SetInComingDamage(0.f);
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%s,new attr: %f"), *Props.TargetAvatarActor->GetName(), LocalInComingDamage));
 	if (LocalInComingDamage > 0)
 	{
 		const float NewHealth = GetHealth() - LocalInComingDamage;
@@ -143,10 +142,13 @@ void UAuraAttributeSet::HandleInComingDamage(const FEffectProperties& Props)
 		}
 		else
 		{
-			
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().Effect_HitReact);
-			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			// 不处于麻痹状态时才会受击
+			if (Props.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Effect_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
 
 			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if (!KnockbackForce.IsNearlyZero(1.f))
@@ -235,14 +237,30 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	Effect->Period = DebuffFrequency;
 	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
 
+	
 	// Granted Tag
 	// Effect->InheritableOwnedTagsContainer.AddTag(AuraGameplayTags.DamageTypesToDebuffs[DamageType]);
-	// TODO:新版 Tag 的 Component 添加 tag
+	const FGameplayTag DebuffTag = AuraGameplayTags.DamageTypesToDebuffs[DamageType];
 	UTargetTagsGameplayEffectComponent& GameplayEffectComponent = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
 	FInheritedTagContainer InheritedTagContainer = FInheritedTagContainer();
-	InheritedTagContainer.Added.AddTag(AuraGameplayTags.DamageTypesToDebuffs[DamageType]);
-	InheritedTagContainer.CombinedTags.AddTag(AuraGameplayTags.DamageTypesToDebuffs[DamageType]);
+	InheritedTagContainer.Added.AddTag(DebuffTag);
+	InheritedTagContainer.CombinedTags.AddTag(DebuffTag);
 	GameplayEffectComponent.SetAndApplyTargetTagChanges(InheritedTagContainer);
+
+	if (DebuffTag.MatchesTagExact(AuraGameplayTags.Debuff_Stun))
+	{
+		UTargetTagsGameplayEffectComponent& GameplayEffectComponent_Stun = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
+		FInheritedTagContainer InheritedTagContainer_Stun = FInheritedTagContainer();
+		InheritedTagContainer_Stun.Added.AddTag(AuraGameplayTags.Player_Block_CursorTrace);
+		InheritedTagContainer_Stun.Added.AddTag(AuraGameplayTags.Player_Block_InputHeld);
+		InheritedTagContainer_Stun.Added.AddTag(AuraGameplayTags.Player_Block_InputPressed);
+		InheritedTagContainer_Stun.Added.AddTag(AuraGameplayTags.Player_Block_InputReleased);
+		InheritedTagContainer_Stun.CombinedTags.AddTag(AuraGameplayTags.Player_Block_CursorTrace);
+		InheritedTagContainer_Stun.CombinedTags.AddTag(AuraGameplayTags.Player_Block_InputHeld);
+		InheritedTagContainer_Stun.CombinedTags.AddTag(AuraGameplayTags.Player_Block_InputPressed);
+		InheritedTagContainer_Stun.CombinedTags.AddTag(AuraGameplayTags.Player_Block_InputReleased);
+		GameplayEffectComponent_Stun.SetAndApplyTargetTagChanges(InheritedTagContainer_Stun);
+	}
 	
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
 	Effect->StackLimitCount = 1;

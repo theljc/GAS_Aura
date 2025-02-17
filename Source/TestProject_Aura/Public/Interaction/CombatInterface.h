@@ -57,6 +57,7 @@ public:
 	FVector GetCombatSocketLocation(const FGameplayTag& MontageTag);
 
 	virtual void Die(const FVector& DeathImpluse) = 0;
+	virtual FOnDeath& GetOnDeathDelegate() = 0;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void UpdateFacingTarget(const FVector& Location);
@@ -92,9 +93,14 @@ public:
 	void SetInShockLoop(bool InLoop);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsBeingShocked() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetIsBeingShocked(bool bInShock);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USkeletalMeshComponent* GetWeapon();
 
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
-	virtual FOnDeath& GetOnDeathDelegate() = 0;
 	
 };
