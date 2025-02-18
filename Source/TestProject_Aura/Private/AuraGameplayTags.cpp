@@ -175,6 +175,8 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Type_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	"Abilities.Type.Passive",
 	FString("技能类型：被动技能"));
+
+
 	
 	GameplayTags.Abilities_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	"Abilities.Fire.FireBolt",
@@ -184,6 +186,27 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	"Abilities.Lighting.Electrocute",
 	FString("闪电技能"));
 
+	GameplayTags.Abilities_Arcane_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Arcane.ArcaneShards",
+	FString("奥术技能"));
+
+	/*
+	 * Passive Spells
+	 */
+	
+	GameplayTags.Abilities_Passive_LifeSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Abilities.Passive.LifeSiphon"),
+			FString("Life Siphon")
+			);
+	GameplayTags.Abilities_Passive_ManaSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Abilities.Passive.ManaSiphon"),
+			FString("Mana Siphon")
+			);
+	GameplayTags.Abilities_Passive_HaloOfProtection = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Abilities.Passive.HaloOfProtection"),
+			FString("光环保护")
+			);
+	
 	// 冷却时间
 	GameplayTags.CoolDown_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	"CoolDown.Fire.FireBolt",

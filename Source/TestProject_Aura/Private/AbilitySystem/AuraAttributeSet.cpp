@@ -197,12 +197,18 @@ void UAuraAttributeSet::HandleInComingXP(const FEffectProperties& Props)
 		{
 			/* 升级时的操作 */
 
-			// 获得技能点
-			const int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
-			const int32 SpellPointsAward = IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, CurrentLevel);
-
 			// 添加等级和技能点
 			IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumsLevelUps);
+
+			int32 AttributePointsReward = 0;
+			int32 SpellPointsAward = 0;
+			for (int32 i = 0; i < NumsLevelUps; i++)
+			{
+				// 获得技能点
+				AttributePointsReward += IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel + i);
+				SpellPointsAward += IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, CurrentLevel + i);
+			}
+			
 			IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, AttributePointsReward);
 			IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, SpellPointsAward);
 

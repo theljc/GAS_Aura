@@ -82,6 +82,11 @@ public:
 	
 	FGameplayTag Abilities_Fire_FireBolt;
 	FGameplayTag Abilities_Lighting_Electrocute;
+	FGameplayTag Abilities_Arcane_ArcaneShards;
+
+	FGameplayTag Abilities_Passive_HaloOfProtection;
+	FGameplayTag Abilities_Passive_LifeSiphon;
+	FGameplayTag Abilities_Passive_ManaSiphon;
 
 	// 冷却时间
 	FGameplayTag CoolDown_Fire_FireBolt;
