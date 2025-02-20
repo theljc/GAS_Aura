@@ -11,10 +11,14 @@
 #include "AuraCharacterBase.generated.h"
 
 class UPassiveNiagaraComponent;
+class UDebuffNiagaraComponent;
 class UNiagaraSystem;
-class UGameplayEffect;
 class UAbilitySystemComponent;
 class UAttributeSet;
+class UGameplayEffect;
+class UGameplayAbility;
+class UAnimMontage;
+
 
 UCLASS(Abstract)
 class TESTPROJECT_AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -28,6 +32,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet;}
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	/* Combat Interface */
 	virtual void Die(const FVector& DeathImpluse) override;
@@ -43,6 +48,7 @@ public:
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
 	virtual FOnDeath& GetOnDeathDelegate() override;
+	virtual FOnDamageSignature& GetOnDamageSignature() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	virtual void SetIsBeingShocked_Implementation(bool bInShock) override;
 	virtual bool IsBeingShocked_Implementation() const override;
@@ -50,6 +56,7 @@ public:
 
 	FOnASCRegistered OnASCRegistered;
 	FOnDeath OnDeathDelegate;
+	FOnDamageSignature OnDamageDelegate;
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MultiCastHandleDeath(const FVector& DeathImpluse);

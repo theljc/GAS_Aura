@@ -7,6 +7,7 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct AuraDamageStatics
 {
@@ -143,7 +144,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	ICombatInterface* TargetCombatInterFace = Cast<ICombatInterface>(TargetAvatar);
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
-
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+	
 	const FGameplayTagContainer* SourceTag = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTag = Spec.CapturedTargetTags.GetAggregatedTags();
 	FAggregatorEvaluateParameters EvaluateParam;
@@ -164,7 +166,11 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		const FGameplayEffectAttributeCaptureDefinition CaptureDef = TagsToCaptureDef[ResistanceTag];
 
 		// GetSetByCallerMagnitude 如果没有找到此伤害类型，会返回 0
-		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key, false);	
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key, false);
+		if (DamageTypeValue <= 0.f)
+		{
+			continue;
+		}
 		
 		float Resistance = 0.f;
 		// 捕获属性的值保存到 Resistance 变量中
@@ -174,6 +180,32 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 		// 计算抗性
 		DamageTypeValue *= ( 100 - Resistance) / 100.0f;
+
+		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
+			{
+				CombatInterface->GetOnDamageSignature().AddLambda([&](float DamageAmount)
+				{
+					DamageTypeValue = DamageAmount;
+				});
+			}
+
+			// 应用会衰减的伤害
+			UGameplayStatics::ApplyRadialDamageWithFalloff(
+				TargetAvatar,
+				DamageTypeValue,
+				0.f,
+				UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+				1.f,
+				UDamageType::StaticClass(),
+				TArray<AActor*>(),
+				SourceAvatar,
+				nullptr);
+			
+		}
 		
 		// 结算抗性后的伤害
 		Damage += DamageTypeValue;
@@ -188,8 +220,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	// 1 ~ 100 之间的随机数用于判断是否能够阻挡
 	const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
-
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+	
 	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
 
 	// 结算格挡后的伤害

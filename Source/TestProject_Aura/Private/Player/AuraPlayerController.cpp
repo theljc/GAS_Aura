@@ -113,7 +113,8 @@ void AAuraPlayerController::CursorTrace()
 		return;
 	}
 
-	GetHitResultUnderCursor(ECC_Target, false, CursorHitResult);
+	const ECollisionChannel TraceChannel = IsValid(MagicCircle) ? ECC_ExcludePlayers : ECC_Visibility;
+	GetHitResultUnderCursor(TraceChannel, false, CursorHitResult);
 	if (!CursorHitResult.bBlockingHit) return;
 
 	LastActor = ThisActor;

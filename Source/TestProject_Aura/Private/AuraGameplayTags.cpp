@@ -190,6 +190,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	"Abilities.Arcane.ArcaneShards",
 	FString("奥术技能"));
 
+	GameplayTags.Abilities_Fire_FireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	"Abilities.Fire.FireBlast",
+	FString("炎爆技能"));
+
 	/*
 	 * Passive Spells
 	 */

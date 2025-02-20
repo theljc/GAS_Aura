@@ -18,41 +18,78 @@ void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
 	
 }
 
-FDamageEffectParam UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassDefault(AActor* TargetActor) const
+FDamageEffectParam UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassDefault(AActor* TargetActor,
+	FVector InRadialDamageOrigin, bool bOverrideKnockbackDirection, FVector KnockbackDirectionOverride,
+	bool bOverrideDeathImpulse, FVector DeathImpulseDirectionOverride, bool bOverridePitch, float PitchOverride) const
 {
 	FDamageEffectParam Param;
-	Param.WorldContextObject = GetAvatarActorFromActorInfo();
-	Param.DamageGameplayEffectClass = DamageEffectClass;
-	Param.SourceAbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
-	Param.TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
-	Param.BaseDamage = Damage.GetValueAtLevel(GetAbilityLevel());
-	Param.AbilityLevel = GetAbilityLevel();
-	Param.DamageType = DamageType;
-	Param.DebuffDamage = DebuffDamage;
-	Param.DebuffChance = DebuffChance;
-	Param.DebuffDuration = DebuffDuration;
-	Param.DebuffFrequency = DebuffFrequency;
-	Param.DeathImpulseMagnitude = DeathImpulseMagnitude;
-	Param.KnockbackForceMagnitude = KnockbackForceMagnitude;
-	Param.KnockbackChance = KnockbackChance;
+    Param.WorldContextObject = GetAvatarActorFromActorInfo();
+    Param.DamageGameplayEffectClass = DamageEffectClass;
+    Param.SourceAbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
+    Param.TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+    Param.BaseDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+    Param.AbilityLevel = GetAbilityLevel();
+    Param.DamageType = DamageType;
+    Param.DebuffDamage = DebuffDamage;
+    Param.DebuffChance = DebuffChance;
+    Param.DebuffDuration = DebuffDuration;
+    Param.DebuffFrequency = DebuffFrequency;
+    Param.DeathImpulseMagnitude = DeathImpulseMagnitude;
+    Param.KnockbackForceMagnitude = KnockbackForceMagnitude;
+    Param.KnockbackChance = KnockbackChance;
+	
 	if (IsValid(TargetActor))
 	{
 		FRotator Rotation = (TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).Rotation();
-		Rotation.Pitch = 45.f;
+		if (bOverridePitch)
+		{
+			Rotation.Pitch = PitchOverride;
+		}
 		const FVector ToTarget = Rotation.Vector();
-		Param.DeathImpulse = ToTarget * DeathImpulseMagnitude;
-		Param.KnockbackForce = ToTarget * KnockbackForceMagnitude;
+		if (!bOverrideKnockbackDirection)
+		{
+			Param.KnockbackForce = ToTarget * KnockbackForceMagnitude;
+		}
+		if (!bOverrideDeathImpulse)
+		{
+			Param.DeathImpulse = ToTarget * DeathImpulseMagnitude;
+		}
 	}
 
-	if (bIsRadialDamage)
+
+	if (bOverrideKnockbackDirection)
 	{
-		Param.bIsRadialDamage = bIsRadialDamage;
-		Param.RadialDamageOrigin = RadialDamageOrigin;
-		Param.RadialDamageInnerRadius = RadialDamageInnerRadius;
-		Param.RadialDamageOuterRadius = RadialDamageOuterRadius;
+		KnockbackDirectionOverride.Normalize();
+		Param.KnockbackForce = KnockbackDirectionOverride * KnockbackForceMagnitude;
+		if (bOverridePitch)
+		{
+			FRotator KnockbackRotation = KnockbackDirectionOverride.Rotation();
+			KnockbackRotation.Pitch = PitchOverride;
+			Param.KnockbackForce = KnockbackRotation.Vector() * KnockbackForceMagnitude;
+		}
 	}
-	
-	return Param;
+
+	if (bOverrideDeathImpulse)
+	{
+		KnockbackDirectionOverride.Normalize();
+		Param.KnockbackForce = DeathImpulseDirectionOverride * DeathImpulseMagnitude;
+		if (bOverridePitch)
+		{
+			FRotator DeathImpulseRotation = DeathImpulseDirectionOverride.Rotation();
+			DeathImpulseRotation.Pitch = PitchOverride;
+			Param.KnockbackForce = DeathImpulseRotation.Vector() * DeathImpulseMagnitude;
+		}
+	}
+
+    if (bIsRadialDamage)
+    {
+    	Param.bIsRadialDamage = bIsRadialDamage;
+    	Param.RadialDamageOrigin = InRadialDamageOrigin;
+    	Param.RadialDamageInnerRadius = RadialDamageInnerRadius;
+    	Param.RadialDamageOuterRadius = RadialDamageOuterRadius;
+    }
+    
+    return Param;
 }
 
 FTaggedMontage UAuraDamageGameplayAbility::GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages) const

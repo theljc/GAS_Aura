@@ -327,7 +327,7 @@ void UAuraAbilitySystemLibrary::SetKnockbackForce(FGameplayEffectContextHandle& 
 {
 	if (FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
-		return EffectContext->SetDeathImpluse(InKnockbackForce);
+		return EffectContext->SetKnockbackForce(InKnockbackForce);
 	}
 }
 

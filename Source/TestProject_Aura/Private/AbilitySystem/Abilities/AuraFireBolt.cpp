@@ -18,13 +18,13 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 	if (Level == 1)
 	{
 		return FString::Printf(TEXT(""
-							  "<Default>%s</> Level:<Level>%d</> Damage:<Damage>%d</>"),
+							  "<Default>%s</> \nLevel:<Level>%d</> \nDamage:<Damage>%d</> \n"),
 							  L"FireBolt Skill", Level, ScalableDamage);
 	}
 	else
 	{
 		return FString::Printf(TEXT(""
-							  "<Default>%s</> Level:<Level>%d</> Damage:<Damage>%d</>"),
+							  "<Default>%s</> \nLevel:<Level>%d</> \nDamage:<Damage>%d</> \n"),
 							  L"FireBolt Skill", Level, ScalableDamage);
 	}
 
@@ -37,7 +37,7 @@ FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 	const float CoolDown = GetCoolDown(Level);
 
 	return FString::Printf(TEXT(""
-							 "<Default>%s</> NextLevel Damage:<Damage>%d</>"),
+							 "<Default>%s</> \nNextLevel Damage:<Damage>%d</> \n"),
 							 L"FireBolt Skill", ScaleDamage);
 }
 
