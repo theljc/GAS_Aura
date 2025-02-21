@@ -274,5 +274,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Player.Block.InputReleased"),
 		FString("打断 InputReleased")
 		);
+
 	
+	GameplayTags.GameplayCue_FireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayCue.FireBlast"),
+		FString("炎爆技能的 GameplayCue")
+		);
+		
 }
