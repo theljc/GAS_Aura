@@ -36,6 +36,7 @@ public:
 	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
 	virtual void ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial = nullptr) override;
 	virtual void HideMagicCircle_Implementation() override;
+	virtual void SaveProgress_Implementation(const FName& CheckPointTag) override;
 	
 	// 重写 ICombatInterface 接口的函数
 	virtual int32 GetPlayerLevel_Implementation() override;

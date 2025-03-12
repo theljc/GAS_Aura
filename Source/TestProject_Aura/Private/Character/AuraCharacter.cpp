@@ -9,8 +9,12 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Camera/CameraComponent.h"
+#include "Game/AuraGameInstance.h"
+#include "Game/AuraGameModeBase.h"
+#include "Game/LoadScreenSaveGame.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
@@ -175,6 +179,19 @@ void AAuraCharacter::HideMagicCircle_Implementation()
 	{
 		AuraPlayerController->HideMagicCircle();
 	}
+}
+
+void AAuraCharacter::SaveProgress_Implementation(const FName& CheckPointTag)
+{
+	AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (AuraGameModeBase)
+	{
+		ULoadScreenSaveGame* SaveData = AuraGameModeBase->RetrieveInGameSaveData();
+		if (SaveData == nullptr) return;
+		SaveData->PlayerStartTag = CheckPointTag;
+		AuraGameModeBase->SaveInGameProgressData(SaveData);
+	}
+	
 }
 
 int32 AAuraCharacter::GetPlayerLevel_Implementation()
