@@ -22,9 +22,9 @@ void UOverlayWidgetController::BroadCastInitialValues()
 void UOverlayWidgetController::BindCallBacksDependencies()
 {
 	GetAuraPlayerState()->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
-	GetAuraPlayerState()->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel)
+	GetAuraPlayerState()->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel, bool bLevelUp)
 	{
-		OnPlayerLevelChanged.Broadcast(NewLevel);
+		OnPlayerLevelChanged.Broadcast(NewLevel, bLevelUp);
 	});
 	
 	// 绑定 lambda 回调函数在生命值变化的时候发出通知	

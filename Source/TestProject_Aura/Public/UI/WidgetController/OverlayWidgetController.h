@@ -32,6 +32,7 @@ struct FUIWidgetRow:public FTableRowBase
 class UAuraUserWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChangedSignature, int32, NewValue, bool, bLevelUp);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewHealth);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChangedSignature, float, NewMaxHealth);
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnManaChangedSignature, float, NewMana);
@@ -72,7 +73,7 @@ public:
 	FOnAttributeChangedSignature LevelUpInfoDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Level")
-	FOnPlayerStatChangedSignature OnPlayerLevelChanged;
+	FOnLevelChangedSignature OnPlayerLevelChanged;
 	
 protected:
 
