@@ -59,12 +59,10 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	// 初始化 ActorInfo
 	InitAbilityActorInfo();
 	LoadProgress();
-	// 激活初始 GA
-	// AddCharacterAbilities();
-	// if (AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
-	// {
-	// 	AuraGameModeBase->LoadWorldState(GetWorld());
-	// }
+	if (AAuraGameModeBase* AuraGameModeBase = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	{
+		AuraGameModeBase->LoadWorldState(GetWorld());
+	}
 }
 
 void AAuraCharacter::OnRep_PlayerState()
@@ -216,6 +214,7 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckPointTag)
 
 		UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 		FForEachAbilities SaveAbilitiesDelegate;
+		SaveData->SavedAbilities.Empty();
 		SaveAbilitiesDelegate.BindLambda([this, AuraASC, SaveData](const FGameplayAbilitySpec& AbilitySpec)
 		{
 			FGameplayTag AbilityTag = AuraASC->GetAbilityTagFromSpec(AbilitySpec);
@@ -228,7 +227,7 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckPointTag)
 			SavedAbility.AbilitySlot = AuraASC->GetSlotFromAbilityTag(AbilityTag);
 			SavedAbility.AbilityStatus = AuraASC->GetStatusFromAbilityTag(AbilityTag);
 
-			SaveData->SavedAbilities.Add(SavedAbility);
+			SaveData->SavedAbilities.AddUnique(SavedAbility);
 		});
 
 		AuraASC->ForEachAbilities(SaveAbilitiesDelegate);
@@ -303,6 +302,11 @@ void AAuraCharacter::LoadProgress()
 		}
 		else
 		{
+			if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+			{
+				AuraASC->AddCharacterAbilitiesFromSaveData(SaveData);
+			}
+			
 			if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(GetPlayerState()))
             {
                 AuraPlayerState->SetLevel(SaveData->PlayerLevel);

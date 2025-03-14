@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class ULoadScreenSaveGame;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer&);
 DECLARE_MULTICAST_DELEGATE(FAbilitiesGiven);
 DECLARE_DELEGATE_OneParam(FForEachAbilities, const FGameplayAbilitySpec&);
@@ -24,9 +25,11 @@ class TESTPROJECT_AURA_API UAuraAbilitySystemComponent : public UAbilitySystemCo
 public:
 	void AbilityActorInfoSet();
 	
+
 	// 添加角色初始拥有的 GA
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities);
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities);
+	void AddCharacterAbilitiesFromSaveData(ULoadScreenSaveGame* SaveData);
 
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	// 按住指定按键时激活 GA

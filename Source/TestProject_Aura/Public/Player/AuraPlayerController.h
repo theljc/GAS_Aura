@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class IHighlightInterface;
 class AMagicCircle;
 class UNiagaraSystem;
 class UDamageTextComponent;
@@ -63,8 +64,8 @@ private:
 
 	// TObjectPtr<AActor> ThisActor;
 	// TObjectPtr<AActor> LastActor;
-	IEnemyInterface* LastActor;
-	IEnemyInterface* ThisActor;
+	IHighlightInterface* LastActor;
+	IHighlightInterface* ThisActor;
 	
 	FHitResult CursorHitResult;
 

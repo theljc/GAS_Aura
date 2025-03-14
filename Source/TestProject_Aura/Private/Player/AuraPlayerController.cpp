@@ -18,6 +18,7 @@
 #include "GameFramework/Character.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "Interaction/HighlightInterface.h"
 #include "TestProject_Aura/TestProject_Aura.h"
 #include "UI/Widget/DamageTextComponent.h"
 
@@ -118,7 +119,7 @@ void AAuraPlayerController::CursorTrace()
 	if (!CursorHitResult.bBlockingHit) return;
 
 	LastActor = ThisActor;
-	ThisActor = Cast<IEnemyInterface>(CursorHitResult.GetActor());
+	ThisActor = Cast<IHighlightInterface>(CursorHitResult.GetActor());
 
 	/**
 	 * 检测有如下 4 种情况
