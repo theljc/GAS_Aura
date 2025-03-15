@@ -80,6 +80,12 @@ void AAuraGameModeBase::SaveWorldState(UWorld* World, const FString& Destination
 
 	if (ULoadScreenSaveGame* SaveGame = GetSaveSlotData(AuraGameInstance->LoadSlotName, AuraGameInstance->LoadSlotIndex))
 	{
+		if (DestinationMapAssetName != FString(""))
+		{
+			SaveGame->MapAssetName = DestinationMapAssetName;
+			SaveGame->MapName = GetMapNameFromMapAssetName(DestinationMapAssetName);
+		}
+		
 		if (!SaveGame->HasMap(WorldName))
 		{
 			FSavedMap NewSavedMap;
@@ -196,6 +202,19 @@ AActor* AAuraGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
 		return SelectedActor;
 	}
 	return nullptr;
+}
+
+FString AAuraGameModeBase::GetMapNameFromMapAssetName(const FString& MapAssetName) const
+{
+	for (auto map: Maps)
+	{
+		if (map.Value.ToSoftObjectPath().GetAssetName() == MapAssetName)
+		{
+			return map.Key;
+		}
+	}
+
+	return FString();
 }
 
 void AAuraGameModeBase::BeginPlay()

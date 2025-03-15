@@ -23,8 +23,14 @@ class TESTPROJECT_AURA_API IHighlightInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	// 鼠标悬停时高亮
-	virtual void HighLightActor() = 0;
+	UFUNCTION(BlueprintNativeEvent)
+	void HighLightActor();
+	
 	// 取消高亮显示
-	virtual void UnHighLightActor() = 0;
+	UFUNCTION(BlueprintNativeEvent)
+	void UnHighLightActor();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SetMoveToLocation(FVector& OutDestination);
 	
 };

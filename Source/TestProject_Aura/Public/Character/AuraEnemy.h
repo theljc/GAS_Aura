@@ -26,8 +26,9 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	/* Highlight Interface */
-	virtual void HighLightActor() override;
-	virtual void UnHighLightActor() override;
+	virtual void HighLightActor_Implementation() override;
+	virtual void UnHighLightActor_Implementation() override;
+	virtual void SetMoveToLocation_Implementation(FVector& OutDestination) override;
 
 	// 重写 ICombatInterface 接口的函数
 	virtual int32 GetPlayerLevel_Implementation() override;

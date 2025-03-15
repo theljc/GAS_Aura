@@ -107,8 +107,9 @@ void AAuraPlayerController::CursorTrace()
 {
 	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
 	{
-		if (LastActor) LastActor->UnHighLightActor();
-		if (ThisActor) ThisActor->UnHighLightActor();
+		UnHighlightActor(LastActor);
+		UnHighlightActor(ThisActor);
+
 		ThisActor = nullptr;
 		LastActor = nullptr;
 		return;
@@ -119,7 +120,15 @@ void AAuraPlayerController::CursorTrace()
 	if (!CursorHitResult.bBlockingHit) return;
 
 	LastActor = ThisActor;
-	ThisActor = Cast<IHighlightInterface>(CursorHitResult.GetActor());
+
+	if (IsValid(CursorHitResult.GetActor()) && CursorHitResult.GetActor()->Implements<UHighlightInterface>())
+	{
+		ThisActor = CursorHitResult.GetActor();
+	}
+	else
+	{
+		ThisActor = nullptr;
+	}
 
 	/**
 	 * 检测有如下 4 种情况
@@ -131,10 +140,26 @@ void AAuraPlayerController::CursorTrace()
 
 	if (ThisActor != LastActor)
 	{
-		if (LastActor) LastActor->UnHighLightActor();
-		if (ThisActor) ThisActor->HighLightActor();
+		UnHighlightActor(LastActor);
+		HighlightActor(ThisActor);
 	}
 	
+}
+
+void AAuraPlayerController::HighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHighlightInterface>())
+	{
+		IHighlightInterface::Execute_HighLightActor(InActor);
+	}
+}
+
+void AAuraPlayerController::UnHighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHighlightInterface>())
+	{
+		IHighlightInterface::Execute_UnHighLightActor(InActor);
+	}
 }
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
@@ -146,7 +171,14 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	// 当激活 GA 时（拥有 InputTag_LMB 这个 Tag 时），判断选中的是不是敌人，是的话就不再移动
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		bTargeting = ThisActor ? true : false;
+		if (IsValid(ThisActor))
+		{
+			TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingNonEnemy;
+		}
+		else
+		{
+			TargetingStatus = ETargetingStatus::NotTargeting;
+		}
 		bAutoRunning = false;
 	}
 
@@ -173,11 +205,20 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
 
 	// 按住的不是鼠标左键或 Shift
-	if (!bTargeting && !bShiftKeyDown)
+	if (TargetingStatus != ETargetingStatus::TargetingEnemy && !bShiftKeyDown)
 	{
 		const APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
+			if (IsValid(ThisActor) && ThisActor->Implements<UHighlightInterface>())
+			{
+				IHighlightInterface::Execute_SetMoveToLocation(ThisActor, CachedDestination);
+			}
+			else if (GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+			{
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+			}
+			
 			// 未点击到敌人时，自动寻路
 			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
 			{
@@ -196,15 +237,10 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 					bAutoRunning = true;
 				}
 			}
-			if (GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
-			{
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
-			}
-
-			// 设置为自动寻路
-			FollowTime = 0.f;
-			bTargeting = false;
 		}
+		// 设置为自动寻路
+		FollowTime = 0.f;
+		TargetingStatus = ETargetingStatus::NotTargeting;
 	}
 }
 
@@ -225,7 +261,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	}
 
 	// 按住了鼠标左键或 shift
-	if (bTargeting || bShiftKeyDown)
+	if (TargetingStatus == ETargetingStatus::TargetingEnemy || bShiftKeyDown)
 	{
 		if (GetASC())
 		{

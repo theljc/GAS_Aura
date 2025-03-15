@@ -19,6 +19,12 @@ class UInputAction;
 struct FInputActionValue;
 class IEnemyInterface;
 
+enum class ETargetingStatus : uint8
+{
+	TargetingEnemy,
+	TargetingNonEnemy,
+	NotTargeting
+};
 
 /**
  * 
@@ -62,10 +68,10 @@ private:
 	void Move(const FInputActionValue& InputActionValue);
 	void CursorTrace();
 
-	// TObjectPtr<AActor> ThisActor;
-	// TObjectPtr<AActor> LastActor;
-	IHighlightInterface* LastActor;
-	IHighlightInterface* ThisActor;
+	TObjectPtr<AActor> ThisActor;
+	TObjectPtr<AActor> LastActor;
+	static void HighlightActor(AActor* InActor);
+	static void UnHighlightActor(AActor* InActor);
 	
 	FHitResult CursorHitResult;
 
@@ -93,7 +99,7 @@ private:
 	// 是否自动移动
 	bool bAutoRunning = false;
 	// 鼠标左键如果点击到了敌人，则会激活 GA 并将该敌人作为目标，此时不会进行移动
-	bool bTargeting = false;
+	ETargetingStatus TargetingStatus = ETargetingStatus::NotTargeting;
 
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius = 50.f;

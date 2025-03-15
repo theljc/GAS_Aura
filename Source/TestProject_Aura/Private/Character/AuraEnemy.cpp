@@ -34,6 +34,12 @@ AAuraEnemy::AAuraEnemy()
 
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	GetMesh()->MarkRenderStateDirty();
+	
+	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	Weapon->MarkRenderStateDirty();
+	
 	BaseWalkSpeed = 250.f;
 	
 }
@@ -52,21 +58,26 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 
 }
 
-void AAuraEnemy::HighLightActor()
+void AAuraEnemy::HighLightActor_Implementation()
 {
 	// 模型开启描边
 	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+
 	// 武器开启描边
 	Weapon->SetRenderCustomDepth(true);
-	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 }
 
-void AAuraEnemy::UnHighLightActor()
+void AAuraEnemy::UnHighLightActor_Implementation()
 {
 	// 关闭描边
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
+}
+
+void AAuraEnemy::SetMoveToLocation_Implementation(FVector& OutDestination)
+{
+	IHighlightInterface::SetMoveToLocation_Implementation(OutDestination);
+	
 }
 
 int32 AAuraEnemy::GetPlayerLevel_Implementation()
