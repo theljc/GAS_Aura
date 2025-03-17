@@ -177,8 +177,9 @@ void AAuraGameModeBase::TravelToMap(UMVVM_LoadSlot* Slot)
 {
 	const FString SlotName = Slot->GetLoadSlotName();
 	const int32 SlotIndex = Slot->SlotIndex;
-	
-	UGameplayStatics::OpenLevelBySoftObjectPtr(Slot, Maps.FindChecked(Slot->GetMapName()));
+	const FString b = Slot->GetMapName();
+	const auto a = Maps.FindChecked(b);
+	UGameplayStatics::OpenLevelBySoftObjectPtr(Slot, a);
 }
 
 AActor* AAuraGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
